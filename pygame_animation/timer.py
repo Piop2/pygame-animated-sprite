@@ -36,10 +36,15 @@ class CountUpTimer(BaseTimer):
         super().__init__(time=0)
 
     def reset(self) -> None:
-        pass
+        self._time = 0
+        return
 
     def update(self, ms: int) -> None:
-        pass
+        if self._is_paused:
+            return
+
+        self._time += ms
+        return
 
 
 class CountDownTimer(BaseTimer):
@@ -55,7 +60,12 @@ class CountDownTimer(BaseTimer):
         return self._time == 0
 
     def reset(self) -> None:
-        pass
+        self._time = self._total_time
+        return
 
     def update(self, ms: int) -> None:
-        pass
+        if self._is_paused:
+            return
+
+        self._time -= ms
+        return
