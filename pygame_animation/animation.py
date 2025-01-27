@@ -14,7 +14,6 @@ class Tag:
     name: str
     start: int
     end: int
-    sub_tags: list[Tag]
 
 
 @dataclass
@@ -36,7 +35,7 @@ class Animation:
         frames: Optional[list[Frame]] = None,
         repeat: int = -1,
         direction: Optional[DirectionType] = None,
-        tags: Optional[list[Tag]] = None
+        tags: Optional[dict[str, Tag]] = None
     ) -> None:
         if frames is None:
             frames = []
@@ -50,8 +49,8 @@ class Animation:
         self._direction_type: DirectionType = direction
 
         if tags is None:
-            tags = []
-        self._tags: list[Tag] = tags
+            tags = {}
+        self._tags: dict[Tag] = tags
 
         self._timer: CountUpTimer = CountUpTimer()
 
@@ -78,7 +77,7 @@ class Animation:
         return self._total_repeat
     
     def get_tags(self) -> tuple[Tag]:
-        return self._tags
+        return tuple(self._tags.values())
     
     def is_playing(self) -> bool:
         return self._timer.is_paused()
@@ -94,7 +93,7 @@ class Animation:
     def reset(self) -> None:
         ...
 
-    def slice(tag_name: str) -> Animation:
+    def split_by_tag(tag_name: str) -> Animation:
         ...
     
     def update(self, ms: int) -> None:
