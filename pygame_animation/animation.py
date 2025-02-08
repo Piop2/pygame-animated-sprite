@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import enum
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, final
 
 from pygame import Surface
 
@@ -35,6 +35,7 @@ class DirectionType(enum.Enum):
     PING_PONG_REVERSE = enum.auto()
 
 
+@final
 class Animation:
     def __init__(
         self,
