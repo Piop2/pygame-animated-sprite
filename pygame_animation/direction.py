@@ -11,10 +11,10 @@ class DirectionIterable(Iterable):
 
     def __iter__(self) -> Iterator:
         raise NotImplementedError
-    
+
     def get_repeat(self) -> int:
         return self.__repeat
-    
+
     def get_frame_length(self) -> int:
         return self.__frame_length
 

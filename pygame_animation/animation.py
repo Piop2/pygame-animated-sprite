@@ -111,7 +111,7 @@ class Animation:
                 self.__index = next(self.__direction_iterator)
             except StopIteration:
                 self.pause()
-        
+
         self.__timer.update(ms)
         return
 
