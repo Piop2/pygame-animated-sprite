@@ -45,13 +45,13 @@ class Animation:
     ) -> None:
         if frames is None:
             frames = []
-        self._frames: list[Frame] = frames
+        self.__frames: list[Frame] = frames
 
         if tags is None:
             tags = {}
-        self._tags: dict[Tag] = tags
+        self.__tags: dict[Tag] = tags
 
-        self._timer: CountUpTimer = CountUpTimer()
+        self.__timer: CountUpTimer = CountUpTimer()
 
         if direction_type is None:
             direction_type = DirectionType.FORWARD
@@ -64,31 +64,31 @@ class Animation:
             case _:
                 raise RuntimeError
 
-        self._direction: DirectionIterable = direction_class(
+        self.__direction: DirectionIterable = direction_class(
             repeat=repeat, frame_length=len(frames)
         )
-        self._direction_iterator: DirectionIterator = iter(self._direction)
-        self._index: int = next(self._direction_iterator)
+        self.__direction_iterator: DirectionIterator = iter(self.__direction)
+        self.__index: int = next(self.__direction_iterator)
         return
 
     def get_frames(self) -> tuple[Frame]:
-        return self._frames
+        return self.__frames
 
     def get_index(self) -> int:
-        return self._index
+        return self.__index
 
     def get_tags(self) -> tuple[Tag]:
-        return tuple(self._tags.values())
+        return tuple(self.__tags.values())
 
     def is_playing(self) -> bool:
-        return self._timer.is_paused()
+        return self.__timer.is_paused()
 
     def play(self) -> None:
-        self._timer.unpause()
+        self.__timer.unpause()
         return
 
     def pause(self) -> None:
-        self._timer.pause()
+        self.__timer.pause()
         return
 
     def reset(self) -> None: ...
