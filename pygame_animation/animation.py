@@ -20,6 +20,7 @@ class Tag:
     name: str
     start: int
     end: int
+    direction: DirectionIterable
 
 
 @dataclass
@@ -92,7 +93,11 @@ class Animation:
         self.__timer.pause()
         return
 
-    def reset(self) -> None: ...
+    def reset(self) -> None:
+        self.__timer.reset()
+        self.__direction_iterator = iter(self.__direction)
+        self.__index = next(self.__direction_iterator)
+        return
 
     def split_by_tag(tag_name: str) -> Animation: ...
 
