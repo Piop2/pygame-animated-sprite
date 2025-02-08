@@ -5,12 +5,18 @@ from typing import Iterable, Iterator
 
 class DirectionIterable(Iterable):
     def __init__(self, repeat: int, frame_length: int) -> None:
-        self._repeat: int = repeat
-        self._frame_length: int = frame_length
+        self.__repeat: int = repeat
+        self.__frame_length: int = frame_length
         return
 
     def __iter__(self) -> Iterator:
         raise NotImplementedError
+    
+    def get_repeat(self) -> int:
+        return self.__repeat
+    
+    def get_frame_length(self) -> int:
+        return self.__frame_length
 
 
 class DirectionIterator(Iterator):
@@ -27,7 +33,7 @@ class DirectionIterator(Iterator):
 
 class Forward(DirectionIterable):
     def __iter__(self) -> ForwardIterator:
-        return ForwardIterator(self._repeat, self._frame_length)
+        return ForwardIterator(self.get_repeat(), self.get_frame_length())
 
 
 class ForwardIterator(DirectionIterator):
@@ -55,7 +61,7 @@ class ForwardIterator(DirectionIterator):
 
 class Reverse(DirectionIterable):
     def __iter__(self) -> ReverseIterator:
-        return ReverseIterator(self._repeat, self._frame_length)
+        return ReverseIterator(self.get_repeat(), self.get_frame_length())
 
 
 class ReverseIterator(DirectionIterator):
