@@ -94,6 +94,7 @@ class Animation:
         return
 
     def reset(self) -> None:
+        self.play()
         self.__timer.reset()
         self.__direction_iterator = iter(self.__direction)
         self.__index = next(self.__direction_iterator)
@@ -101,6 +102,18 @@ class Animation:
 
     def split_by_tag(tag_name: str) -> Animation: ...
 
-    def update(self, ms: int) -> None: ...
+    def update(self, ms: int) -> None:
+        if not self.is_playing():
+            return
 
-    def render(self) -> Surface: ...
+        if self.__timer.get_time() >= self.__frames[self.__index].duration:
+            try:
+                self.__index = next(self.__direction_iterator)
+            except StopIteration:
+                self.pause()
+        
+        self.__timer.update(ms)
+        return
+
+    def render(self) -> Surface:
+        return self.__frames[self.__index].image
