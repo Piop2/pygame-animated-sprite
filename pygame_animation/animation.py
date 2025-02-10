@@ -52,6 +52,12 @@ class Animation:
         self.__index: int = next(self.__direction_iterator)
         return
 
+    def get_size(self) -> tuple[int, int]:
+        if not self.__frames:
+            raise RuntimeError
+
+        return self.__frames[0].image.get_size()
+
     def get_frames(self) -> tuple[Frame]:
         return self.__frames
 
