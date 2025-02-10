@@ -1,6 +1,14 @@
 from __future__ import annotations
 
+import enum
 from typing import Iterable, Iterator
+
+
+class DirectionType(enum.Enum):
+    FORWARD = enum.auto()
+    REVERSE = enum.auto()
+    PING_PONG = enum.auto()
+    PING_PONG_REVERSE = enum.auto()
 
 
 class DirectionIterable(Iterable):

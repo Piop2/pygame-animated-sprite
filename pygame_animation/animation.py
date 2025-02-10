@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import enum
 from dataclasses import dataclass
 from typing import Optional, final
 
@@ -8,6 +7,7 @@ from pygame import Surface
 
 from pygame_animation.timer import CountUpTimer
 from pygame_animation.direction import (
+    DirectionType,
     DirectionIterable,
     DirectionIterator,
     Forward,
@@ -31,13 +31,6 @@ class Tag:
 class Frame:
     image: Surface
     duration: int
-
-
-class DirectionType(enum.Enum):
-    FORWARD = enum.auto()
-    REVERSE = enum.auto()
-    PING_PONG = enum.auto()
-    PING_PONG_REVERSE = enum.auto()
 
 
 @final
