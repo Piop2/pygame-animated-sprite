@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Optional, final
 
 from pygame import Surface
@@ -13,24 +12,7 @@ from pygame_animation.direction import (
     Forward,
     Reverse,
 )
-
-
-@dataclass
-class Tag:
-    name: str
-    start: int
-    end: int
-    direction_type: DirectionType
-    repeat: int
-
-    def copy(self) -> Tag:
-        return Tag(self.name, self.start, self.end, self.direction_type, self.repeat)
-
-
-@dataclass
-class Frame:
-    image: Surface
-    duration: int
+from pygame_animation.struct import Tag, Frame
 
 
 @final
@@ -106,11 +88,12 @@ class Animation:
                 continue
 
             if main_tag.start <= tag.start and tag.end <= main_tag.end:
-                tag: Tag = tag.copy()
-                tag.start = tag.start - main_tag.start
-                tag.end = main_tag.end - tag.end
+                new_start = tag.start - main_tag.start
+                new_end = main_tag.end - tag.end
 
-                sub_tags.append(tag)
+                sub_tags.append(
+                    Tag(tag.name, new_start, new_end, tag.direction_type, tag.repeat)
+                )
 
         return Animation(
             self.__frames[main_tag.start : main_tag.end + 1],
