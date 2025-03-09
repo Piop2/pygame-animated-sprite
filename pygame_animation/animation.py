@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from typing import Optional, final
+from os import PathLike
+from pathlib import Path
 
 from pygame import Surface
 
@@ -13,6 +15,7 @@ from pygame_animation.direction import (
     Reverse,
 )
 from pygame_animation.struct import Tag, Frame
+from pygame_animation.loader import BaseLoader
 
 
 @final
@@ -51,6 +54,11 @@ class Animation:
         self.__direction_iterator: DirectionIterator = iter(self.__direction)
         self.__index: int = next(self.__direction_iterator)
         return
+    
+    @classmethod
+    def load(self, path: str | Path | PathLike, loader: Optional[BaseLoader] = None) -> Animation:
+        loader = ... # TODO 기본 로더 구현 필요
+        raise NotImplementedError
 
     def get_size(self) -> tuple[int, int]:
         if not self.__frames:
