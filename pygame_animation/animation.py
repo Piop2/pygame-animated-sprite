@@ -93,7 +93,7 @@ class Animation:
         self.__index = next(self.__direction_iterator)
         return
 
-    def split_by_tag(self, tag_name: str) -> Animation:
+    def slice_by_tag(self, tag_name: str) -> Animation:
         main_tag: Tag = self.__tags[tag_name]
 
         sub_tags: list[Tag] = []
