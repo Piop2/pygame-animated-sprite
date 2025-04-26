@@ -60,11 +60,11 @@ class Animation:
         loader = ... # TODO 기본 로더 구현 필요
         raise NotImplementedError
 
-    def get_size(self) -> tuple[int, int]:
+    def get_current_frame(self) -> Frame:
         if not self.__frames:
             raise RuntimeError
 
-        return self.__frames[0].image.get_size()
+        return self.__frames[self.__index]
 
     def get_frames(self) -> tuple[Frame]:
         return self.__frames
