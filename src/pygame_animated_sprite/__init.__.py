@@ -1,7 +1,7 @@
-import animation
+import sprite
 import direction
 
-Animation = animation.Animation
+AnimatedSprite = sprite.AnimatedSprite
 DirectionType = direction.DirectionType
 
-del animation, direction
+del sprite, direction

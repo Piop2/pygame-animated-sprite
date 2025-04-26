@@ -19,7 +19,7 @@ from .loader import BaseLoader
 
 
 @final
-class Animation:
+class AnimatedSprite:
     def __init__(
         self,
         frames: Optional[Sequence[Frame]] = None,
@@ -58,7 +58,7 @@ class Animation:
     def __len__(self) -> int:
         return len(self.__frames)
 
-    def __getitem__(self, key: int | str | slice) -> Frame | Animation:
+    def __getitem__(self, key: int | str | slice) -> Frame | AnimatedSprite:
         if isinstance(key, int):  # index
             return self.__frames[key]
 
@@ -66,7 +66,7 @@ class Animation:
             return self.slice_by_tag(key)
 
         elif isinstance(key, slice):  # slice by slice obj
-            return Animation(self.__frames[key])
+            return AnimatedSprite(self.__frames[key])
 
         raise TypeError
         return
@@ -74,7 +74,7 @@ class Animation:
     @classmethod
     def load(
         self, path: str | Path | PathLike, loader: Optional[BaseLoader] = None
-    ) -> Animation:
+    ) -> AnimatedSprite:
         loader = ...  # TODO 기본 로더 구현 필요
         raise NotImplementedError
 
@@ -111,7 +111,7 @@ class Animation:
         self.__index = next(self.__direction_iterator)
         return
 
-    def slice_by_tag(self, tag_name: str) -> Animation:
+    def slice_by_tag(self, tag_name: str) -> AnimatedSprite:
         if tag_name not in self.__tags:
             raise KeyError
 
@@ -130,7 +130,7 @@ class Animation:
                     Tag(tag.name, new_start, new_end, tag.direction_type, tag.repeat)
                 )
 
-        return Animation(
+        return AnimatedSprite(
             self.__frames[main_tag.start : main_tag.end + 1],
             main_tag.repeat,
             main_tag.direction_type,
