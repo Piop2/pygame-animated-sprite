@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, final
+from typing import Optional, final, Sequence
 from os import PathLike
 from pathlib import Path
 
@@ -22,14 +22,14 @@ from pygame_animation.loader import BaseLoader
 class Animation:
     def __init__(
         self,
-        frames: Optional[list[Frame]] = None,
+        frames: Optional[Sequence[Frame]] = None,
         repeat: int = 0,
         direction_type: Optional[DirectionType] = None,
         tags: Optional[dict[str, Tag]] = None,
     ) -> None:
         if frames is None:
             frames = []
-        self.__frames: list[Frame] = frames
+        self.__frames: list[Frame] = list(frames)
 
         if tags is None:
             tags = {}
@@ -53,6 +53,22 @@ class Animation:
         )
         self.__direction_iterator: DirectionIterator = iter(self.__direction)
         self.__index: int = next(self.__direction_iterator)
+        return
+
+    def __len__(self) -> int:
+        return len(self.__frames)
+
+    def __getitem__(self, key: int | str | slice) -> Frame | Animation:
+        if isinstance(key, int):  # index
+            return self.__frames[key]
+
+        elif isinstance(key, str):  # slice by key
+            return self.slice_by_tag(key)
+
+        elif isinstance(key, slice):  # slice by slice obj
+            return Animation(self.__frames[key])
+
+        raise TypeError
         return
 
     @classmethod
@@ -96,6 +112,9 @@ class Animation:
         return
 
     def slice_by_tag(self, tag_name: str) -> Animation:
+        if tag_name not in self.__tags:
+            raise KeyError
+
         main_tag: Tag = self.__tags[tag_name]
 
         sub_tags: list[Tag] = []
