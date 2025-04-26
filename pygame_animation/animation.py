@@ -4,7 +4,7 @@ from typing import Optional, final
 from os import PathLike
 from pathlib import Path
 
-from pygame import Surface
+from pygame import Surface, Vector2
 
 from pygame_animation.timer import CountUpTimer
 from pygame_animation.direction import (
@@ -54,10 +54,12 @@ class Animation:
         self.__direction_iterator: DirectionIterator = iter(self.__direction)
         self.__index: int = next(self.__direction_iterator)
         return
-    
+
     @classmethod
-    def load(self, path: str | Path | PathLike, loader: Optional[BaseLoader] = None) -> Animation:
-        loader = ... # TODO 기본 로더 구현 필요
+    def load(
+        self, path: str | Path | PathLike, loader: Optional[BaseLoader] = None
+    ) -> Animation:
+        loader = ...  # TODO 기본 로더 구현 필요
         raise NotImplementedError
 
     def get_current_frame(self) -> Frame:
@@ -72,7 +74,7 @@ class Animation:
     def get_index(self) -> int:
         return self.__index
 
-    def get_tags(self) -> tuple[Tag]:
+    def get_tags(self) -> tuple[Tag, ...]:
         return tuple(self.__tags.values())
 
     def is_playing(self) -> bool:
@@ -131,3 +133,7 @@ class Animation:
 
     def render(self) -> Surface:
         return self.__frames[self.__index].image
+
+    def draw(self, surface: Surface, dest: tuple[int, int] | Vector2) -> None:
+        surface.blit(self.render(), dest)
+        return

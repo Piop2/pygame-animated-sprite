@@ -12,7 +12,7 @@ from pygame_animation.struct import Tag, Frame
 class BaseLoader(Protocol):
     def __init__(self) -> None:
         pass
-    
+
     def load_animation(self, path: str | Path | PathLike):
         pass
 
