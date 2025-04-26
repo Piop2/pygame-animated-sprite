@@ -23,3 +23,5 @@ class Tag:
 class Frame:
     image: Surface
     duration: int
+    def copy(self) -> Frame:
+        return Frame(self.image.copy(), self.duration)
