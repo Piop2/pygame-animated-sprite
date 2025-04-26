@@ -6,7 +6,7 @@ import json
 import pygame
 from pygame import Surface
 
-from pygame_animation.struct import Tag, Frame
+from .struct import Tag, Frame
 
 
 class BaseLoader(Protocol):

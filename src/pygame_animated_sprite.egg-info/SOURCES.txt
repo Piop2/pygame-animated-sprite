@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/pygame_animated_sprite/__init.__.py
+src/pygame_animated_sprite/animation.py
+src/pygame_animated_sprite/direction.py
+src/pygame_animated_sprite/loader.py
+src/pygame_animated_sprite/struct.py
+src/pygame_animated_sprite/timer.py
+src/pygame_animated_sprite.egg-info/PKG-INFO
+src/pygame_animated_sprite.egg-info/SOURCES.txt
+src/pygame_animated_sprite.egg-info/dependency_links.txt
+src/pygame_animated_sprite.egg-info/requires.txt
+src/pygame_animated_sprite.egg-info/top_level.txt

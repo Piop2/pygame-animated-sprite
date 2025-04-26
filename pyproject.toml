@@ -1,0 +1,12 @@
+[project]
+name = "pygame-animated-sprite"
+version = "0.1"
+authors = [
+    {name = "Pio", email = "pioooop2@gmail.com"},
+]
+description = "Animated Sprite package for pygame"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pygame-ce"
+]

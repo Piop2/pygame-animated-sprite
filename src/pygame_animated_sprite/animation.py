@@ -6,16 +6,16 @@ from pathlib import Path
 
 from pygame import Surface, Vector2
 
-from pygame_animation.timer import CountUpTimer
-from pygame_animation.direction import (
+from .timer import CountUpTimer
+from .direction import (
     DirectionType,
     DirectionIterable,
     DirectionIterator,
     Forward,
     Reverse,
 )
-from pygame_animation.struct import Tag, Frame
-from pygame_animation.loader import BaseLoader
+from .struct import Tag, Frame
+from .loader import BaseLoader
 
 
 @final
