@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Protocol
+from typing import Optional, Protocol, final
 from os import PathLike
 from pathlib import Path
 from dataclasses import dataclass
@@ -10,14 +10,15 @@ from .struct import Frame, Tag
 
 
 class __Singleton(type):
-    __instance: Optional[__Singleton] = None
+    __instances: dict[str, __Singleton] = {}
 
-    def __call__(cls, *args, **kwargs) -> any:
-        if cls.__instance is None:
-            cls.__instance = super().__call__(*args, **kwargs)
-        return cls.__instance
+    def __call__(cls: __Singleton, *args, **kwargs) -> any:
+        if (class_name := cls.__class__.__name__) not in cls.__instances :
+            cls.__instances[class_name] = super().__call__(*args, **kwargs)
+        
+        return cls.__instances[class_name]
 
-
+@final
 class AnimatedSpritLoader(metaclass=__Singleton):
     def __init__(
         self,
@@ -40,6 +41,10 @@ class AnimatedSpritLoader(metaclass=__Singleton):
     @property
     def path(self) -> Path:
         return self.__path
+    
+    @property
+    def protocol(self) -> AnimatedSpriteLoaderProtocol:
+        return self.__protocol
 
     def load(self) -> LoadedAnimatedSprite:
         return self.__protocol.load(self.__path)
