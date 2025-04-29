@@ -5,18 +5,19 @@ from os import PathLike
 from pathlib import Path
 from dataclasses import dataclass
 
-from .direction import DirectionIterable
-from .struct import Frame, Tag
+from ..direction import DirectionIterable
+from ..struct import Frame, Tag
 
 
 class __Singleton(type):
     __instances: dict[str, __Singleton] = {}
 
     def __call__(cls: __Singleton, *args, **kwargs) -> any:
-        if (class_name := cls.__class__.__name__) not in cls.__instances :
+        if (class_name := cls.__class__.__name__) not in cls.__instances:
             cls.__instances[class_name] = super().__call__(*args, **kwargs)
-        
+
         return cls.__instances[class_name]
+
 
 @final
 class AnimatedSpritLoader(metaclass=__Singleton):
@@ -41,7 +42,7 @@ class AnimatedSpritLoader(metaclass=__Singleton):
     @property
     def path(self) -> Path:
         return self.__path
-    
+
     @property
     def protocol(self) -> AnimatedSpriteLoaderProtocol:
         return self.__protocol
