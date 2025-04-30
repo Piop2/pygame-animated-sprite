@@ -4,6 +4,7 @@ from typing import Optional, Protocol, final
 from os import PathLike
 from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 from ..direction import DirectionIterable
 from ..struct import Frame, Tag
@@ -28,12 +29,14 @@ class AnimatedSpritLoader(metaclass=__Singleton):
     ) -> None:
         super().__init__()
 
-        self.__path: str | PathLike = path
+        self.__path: Path = Path(path)
 
         if protocol is None:
 
             class DefaultProtocol(AnimatedSpriteLoaderProtocol):
-                pass
+                def load(self, *paths: str | PathLike) -> AnimatedSpriteData:
+                    # TODO 이거 쓰기
+                    pass
 
             protocol = DefaultProtocol()
         self.__protocol: AnimatedSpriteLoaderProtocol = protocol
@@ -41,22 +44,36 @@ class AnimatedSpritLoader(metaclass=__Singleton):
 
     @property
     def path(self) -> Path:
-        return self.__path
+        return self.__path.as_posix()
 
     @property
     def protocol(self) -> AnimatedSpriteLoaderProtocol:
         return self.__protocol
 
-    def load(self) -> LoadedAnimatedSprite:
+    def load(self) -> AnimatedSpriteData:
         return self.__protocol.load(self.__path)
 
 
 class AnimatedSpriteLoaderProtocol(Protocol):
-    def load(self, path: str | PathLike) -> LoadedAnimatedSprite: ...
+    def load(self, *paths: str | PathLike | Path) -> AnimatedSpriteData:
+        paths: list[Path] = [Path(path) for path in paths if not isinstance(path, Path)]
+
+        if len(paths) == 1:
+            if paths[0].is_dir():
+                return self.load_dir(paths[0])
+            raise RuntimeError
+
+        return self.load_files(*paths)
+
+    def load_files(self, *paths: Path) -> AnimatedSpriteData:
+        raise NotImplementedError
+
+    def load_dir(self, path: Path) -> AnimatedSpriteData:
+        raise NotImplementedError
 
 
 @dataclass(frozen=True)
-class LoadedAnimatedSprite:
+class AnimatedSpriteData:
     frames: tuple[Frame, ...]
     repeat: int
     direction: DirectionIterable
