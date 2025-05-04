@@ -1,13 +1,23 @@
 from __future__ import annotations
 
-from typing import Optional, Protocol, final
+from typing import Optional, final, Protocol
 from os import PathLike
 from pathlib import Path
 from dataclasses import dataclass
 from pathlib import Path
 
+import pygame.image
+
 from ..direction import DirectionIterable
 from ..struct import Frame, Tag
+
+
+@dataclass(frozen=True)
+class AnimatedSpriteData:
+    frames: Optional[tuple[Frame, ...]] = None
+    repeat: Optional[int] = None
+    direction: Optional[DirectionIterable] = None
+    tags: Optional[dict[str, Tag]] = None
 
 
 class __Singleton(type):
@@ -21,25 +31,27 @@ class __Singleton(type):
 
 
 @final
-class AnimatedSpritLoader(metaclass=__Singleton):
+class AnimatedSpriteLoader(metaclass=__Singleton):
     def __init__(
         self,
-        path: str | PathLike,
-        protocol: Optional[AnimatedSpriteLoaderProtocol] = None,
+        *paths: str | PathLike,
+        protocol: Optional[AnimatedSpriteLoadProtocol] = None,
     ) -> None:
         super().__init__()
 
-        self.__path: Path = Path(path)
+        self.__paths: list[Path] = [Path(path) for path in paths]
 
         if protocol is None:
 
-            class DefaultProtocol(AnimatedSpriteLoaderProtocol):
-                def load(self, *paths: str | PathLike) -> AnimatedSpriteData:
-                    # TODO 이거 쓰기
-                    pass
+            class DefualtLoad(AnimatedSpriteLoadProtocol):
+                def load(self, path: Path) -> AnimatedSpriteData:
+                    if path.suffix not in [".png", ".jpeg", ".jpg"]:
+                        raise UnsupportedFileFormat
+                    return AnimatedSpriteData(frames=[pygame.image.load(path)])
 
-            protocol = DefaultProtocol()
-        self.__protocol: AnimatedSpriteLoaderProtocol = protocol
+            protocol = DefualtLoad()
+
+        self.__load_protocol: AnimatedSpriteLoadProtocol = protocol
         return
 
     @property
@@ -47,34 +59,39 @@ class AnimatedSpritLoader(metaclass=__Singleton):
         return self.__path.as_posix()
 
     @property
-    def protocol(self) -> AnimatedSpriteLoaderProtocol:
-        return self.__protocol
+    def protocol(self) -> AnimatedSpriteLoadProtocol:
+        return self.__load_protocol
 
     def load(self) -> AnimatedSpriteData:
-        return self.__protocol.load(self.__path)
+        frames: tuple[Frame] = ()
+        repeat: int = 0
+        direction: Optional[DirectionIterable] = None
+        tags: dict[str, Tag] = {}
+
+        for path in self.__paths:
+            data: AnimatedSpriteData = self.__load_protocol.load(path)
+
+            if data.frames is not None:
+                frames += data.frames
+
+            if data.repeat is not None:
+                repeat = data.repeat
+
+            if data.direction is not None:
+                direction = data.direction
+
+            if data.tags is not None:
+                for tag_name, tag in data.tags.items():
+                    tags[tag_name] = tag
+
+        return AnimatedSpriteData(
+            frames=frames, repeat=repeat, direction=direction, tags=tags
+        )
 
 
-class AnimatedSpriteLoaderProtocol(Protocol):
-    def load(self, *paths: str | PathLike | Path) -> AnimatedSpriteData:
-        paths: list[Path] = [Path(path) for path in paths if not isinstance(path, Path)]
-
-        if len(paths) == 1:
-            if paths[0].is_dir():
-                return self.load_dir(paths[0])
-            raise RuntimeError
-
-        return self.load_files(*paths)
-
-    def load_files(self, *paths: Path) -> AnimatedSpriteData:
-        raise NotImplementedError
-
-    def load_dir(self, path: Path) -> AnimatedSpriteData:
-        raise NotImplementedError
+class AnimatedSpriteLoadProtocol(Protocol):
+    def load(self, path: Path) -> AnimatedSpriteData: ...
 
 
-@dataclass(frozen=True)
-class AnimatedSpriteData:
-    frames: tuple[Frame, ...]
-    repeat: int
-    direction: DirectionIterable
-    tags: dict[str, Tag]
+class UnsupportedFileFormat(Exception):
+    pass
