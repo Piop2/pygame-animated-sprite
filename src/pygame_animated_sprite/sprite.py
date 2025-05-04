@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import Optional, final, Sequence
+from typing import Optional, Sequence, final
 from os import PathLike
 from pathlib import Path
 
+import pygame.image
 from pygame import Surface, Vector2
 
 from .timer import CountUpTimer
@@ -15,7 +16,12 @@ from .direction import (
     Reverse,
 )
 from .struct import Tag, Frame
-from .loader import BaseLoader
+from .loader.base import (
+    AnimatedSpriteLoader,
+    AnimatedSpriteData,
+    AnimatedSpriteLoadProtocol,
+    UnsupportedFileFormatError,
+)
 
 
 @final
@@ -24,7 +30,7 @@ class AnimatedSprite:
         self,
         frames: Optional[Sequence[Frame]] = None,
         repeat: int = 0,
-        direction_type: Optional[DirectionType] = None,
+        direction: Optional[DirectionType | DirectionIterable] = None,
         tags: Optional[dict[str, Tag]] = None,
     ) -> None:
         if frames is None:
@@ -37,16 +43,19 @@ class AnimatedSprite:
 
         self.__timer: CountUpTimer = CountUpTimer()
 
-        if direction_type is None:
-            direction_type = DirectionType.FORWARD
         direction_class: type[DirectionIterable]
-        match direction_type:
-            case DirectionType.FORWARD:
-                direction_class = Forward
-            case DirectionType.REVERSE:
-                direction_class = Reverse
-            case _:
-                raise RuntimeError
+        if isinstance(direction, DirectionIterable):
+            direction_class = direction
+        else:
+            if direction is None:
+                direction = DirectionType.FORWARD
+            match direction:
+                case DirectionType.FORWARD:
+                    direction_class = Forward
+                case DirectionType.REVERSE:
+                    direction_class = Reverse
+                case _:
+                    raise RuntimeError
 
         self.__direction: DirectionIterable = direction_class(
             repeat=repeat, frame_length=len(frames)
@@ -73,10 +82,29 @@ class AnimatedSprite:
 
     @classmethod
     def load(
-        self, path: str | Path | PathLike, loader: Optional[BaseLoader] = None
+        cls,
+        *paths: str | PathLike,
+        protocol: Optional[AnimatedSpriteLoadProtocol] = None,
     ) -> AnimatedSprite:
-        loader = ...  # TODO 기본 로더 구현 필요
-        raise NotImplementedError
+        if protocol is None:
+
+            class DefualtLoad(AnimatedSpriteLoadProtocol):
+                def load(self, path: Path) -> AnimatedSpriteData:
+                    if path.suffix not in [".png", ".jpeg", ".jpg"]:
+                        raise UnsupportedFileFormatError
+                    return AnimatedSpriteData(frames=[pygame.image.load(path)])
+
+            protocol = DefualtLoad()
+
+        data: AnimatedSpriteData = AnimatedSpriteLoader(
+            *paths, protocol=DefualtLoad()
+        ).load()
+        return cls(
+            data.frames,
+            data.repeat,
+            data.direction,
+            data.tags,
+        )
 
     def get_current_frame(self) -> Frame:
         if not self.__frames:

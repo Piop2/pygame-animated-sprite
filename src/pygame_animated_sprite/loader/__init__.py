@@ -1,1 +1,1 @@
-from .base import AnimatedSpritLoader, LoadedAnimatedSprite
+from .base import AnimatedSpriteData

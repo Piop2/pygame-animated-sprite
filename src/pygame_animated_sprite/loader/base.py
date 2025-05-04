@@ -35,22 +35,11 @@ class AnimatedSpriteLoader(metaclass=__Singleton):
     def __init__(
         self,
         *paths: str | PathLike,
-        protocol: Optional[AnimatedSpriteLoadProtocol] = None,
+        protocol: AnimatedSpriteLoadProtocol,
     ) -> None:
         super().__init__()
 
         self.__paths: list[Path] = [Path(path) for path in paths]
-
-        if protocol is None:
-
-            class DefualtLoad(AnimatedSpriteLoadProtocol):
-                def load(self, path: Path) -> AnimatedSpriteData:
-                    if path.suffix not in [".png", ".jpeg", ".jpg"]:
-                        raise UnsupportedFileFormat
-                    return AnimatedSpriteData(frames=[pygame.image.load(path)])
-
-            protocol = DefualtLoad()
-
         self.__load_protocol: AnimatedSpriteLoadProtocol = protocol
         return
 
@@ -93,5 +82,5 @@ class AnimatedSpriteLoadProtocol(Protocol):
     def load(self, path: Path) -> AnimatedSpriteData: ...
 
 
-class UnsupportedFileFormat(Exception):
+class UnsupportedFileFormatError(Exception):
     pass
