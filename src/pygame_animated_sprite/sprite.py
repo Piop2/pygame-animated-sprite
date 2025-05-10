@@ -16,10 +16,9 @@ from .direction import (
     Reverse,
 )
 from .struct import Tag, Frame
-from .loader.base import (
-    AnimatedSpriteLoader,
+from .encoder.base import (
+    AnimatedSpriteEncoder,
     AnimatedSpriteData,
-    AnimatedSpriteLoadProtocol,
     UnsupportedFileFormatError,
 )
 
@@ -30,7 +29,7 @@ class AnimatedSprite:
         self,
         frames: Optional[Sequence[Frame]] = None,
         repeat: int = 0,
-        direction: Optional[DirectionType | DirectionIterable] = None,
+        direction: Optional[DirectionType | type[DirectionIterable]] = None,
         tags: Optional[dict[str, Tag]] = None,
     ) -> None:
         if frames is None:
@@ -84,21 +83,20 @@ class AnimatedSprite:
     def load(
         cls,
         *paths: str | PathLike,
-        protocol: Optional[AnimatedSpriteLoadProtocol] = None,
+        encoder: Optional[AnimatedSpriteEncoder] = None,
     ) -> AnimatedSprite:
-        if protocol is None:
+        if encoder is None:
 
-            class DefualtLoad(AnimatedSpriteLoadProtocol):
-                def load(self, path: Path) -> AnimatedSpriteData:
+            class DefaultEncoder(AnimatedSpriteEncoder):
+                def load_file(self, path: Path) -> AnimatedSpriteData:
                     if path.suffix not in [".png", ".jpeg", ".jpg"]:
                         raise UnsupportedFileFormatError
                     return AnimatedSpriteData(frames=[pygame.image.load(path)])
 
-            protocol = DefualtLoad()
+            encoder = DefaultEncoder()
 
-        data: AnimatedSpriteData = AnimatedSpriteLoader(
-            *paths, protocol=DefualtLoad()
-        ).load()
+        data: AnimatedSpriteData = encoder.load(*paths)
+
         return cls(
             data.frames,
             data.repeat,
