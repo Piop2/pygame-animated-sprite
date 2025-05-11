@@ -4,7 +4,7 @@ from typing import Optional
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..direction import DirectionIterable
+from ..direction import DirectionIterable, Forward
 from ..struct import Frame, Tag
 
 
@@ -38,7 +38,7 @@ class AnimatedSpriteEncoder:
 
         frames: tuple[Frame] = ()
         repeat: int = 0
-        direction: Optional[DirectionIterable] = None
+        direction: DirectionIterable = Forward
         tags: dict[str, Tag] = {}
 
         for path in paths:

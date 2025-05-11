@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from pygame import Surface
 
-from .direction import DirectionType
+from .direction import DirectionIterable
 
 
 @dataclass(frozen=True)
@@ -12,7 +12,7 @@ class Tag:
     name: str
     start: int
     end: int
-    direction_type: DirectionType
+    direction: DirectionIterable
     repeat: int
 
     def copy(self) -> Tag:
