@@ -57,7 +57,7 @@ class ForwardIterator(DirectionIterator):
         frame_index: int = self._index
         if frame_index == self._frame_length:
             self._repeat -= 1
-            if self._repeat <= 0:
+            if self._repeat == 0:
                 raise StopIteration
 
             self._index = 0
