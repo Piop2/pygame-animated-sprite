@@ -26,7 +26,7 @@ class AnimatedSprite:
     def __init__(
         self,
         frames: Sequence[Frame],
-        repeat: int,
+        repeat: int = 0,
         direction: Optional[type[DirectionIterable]] = None,
         tags: Optional[dict[str, Tag]] = None,
     ) -> None:
@@ -35,6 +35,9 @@ class AnimatedSprite:
         if tags is None:
             tags = dict()
         self.__tags: dict[str, Tag] = tags
+
+        # origin repeat
+        self.__repeat: int = repeat
 
         if direction is None:
             direction = Forward
@@ -109,15 +112,27 @@ class AnimatedSprite:
 
     @property
     def repeat(self) -> int:
-        return self.repeat
+        return self.__repeat
 
     @repeat.setter
     def repeat(self, new: int) -> None:
-        raise NotImplementedError
+        self.__direction.repeat = new
+        self.reset()
+        return
 
     @property
     def index(self) -> int:
         return self.__index
+
+    @property
+    def direction(self) -> type[DirectionIterable]:
+        return self.__direction.__class__
+
+    @direction.setter
+    def direction(self, new: type[DirectionIterable]) -> None:
+        self.__direction = new(repeat=self.__repeat, frame_length=len(self.__frames))
+        self.reset()
+        return
 
     def get_time(self) -> int:
         return self.__timer.get_time()
