@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Sequence, final
+from typing import Optional, Sequence, final, overload
 from os import PathLike
 from pathlib import Path
 
@@ -9,11 +9,9 @@ from pygame import Surface, Vector2
 
 from .timer import CountUpTimer
 from .direction import (
-    DirectionType,
     DirectionIterable,
     DirectionIterator,
     Forward,
-    Reverse,
 )
 from .struct import Tag, Frame
 from .encoder.base import (
@@ -25,40 +23,28 @@ from .encoder.base import (
 
 @final
 class AnimatedSprite:
+    @overload
     def __init__(
         self,
-        frames: Optional[Sequence[Frame]] = None,
-        repeat: int = 0,
-        direction: Optional[DirectionType | type[DirectionIterable]] = None,
+        frames: Sequence[Frame],
+        repeat: int,
+        direction: Optional[type[DirectionIterable]] = None,
         tags: Optional[dict[str, Tag]] = None,
     ) -> None:
-        if frames is None:
-            frames = []
         self.__frames: list[Frame] = list(frames)
 
         if tags is None:
-            tags = {}
+            tags = dict()
         self.__tags: dict[str, Tag] = tags
+
+        if direction is None:
+            direction = Forward
+        self.__direction: DirectionIterable = direction(
+            repeat=repeat, frame_length=len(frames)
+        )
 
         self.__timer: CountUpTimer = CountUpTimer()
 
-        direction_class: type[DirectionIterable]
-        if isinstance(direction, DirectionIterable):
-            direction_class = direction
-        else:
-            if direction is None:
-                direction = DirectionType.FORWARD
-            match direction:
-                case DirectionType.FORWARD:
-                    direction_class = Forward
-                case DirectionType.REVERSE:
-                    direction_class = Reverse
-                case _:
-                    raise RuntimeError
-
-        self.__direction: DirectionIterable = direction_class(
-            repeat=repeat, frame_length=len(frames)
-        )
         self.__direction_iterator: DirectionIterator = iter(self.__direction)
         self.__index: int = next(self.__direction_iterator)
         return
@@ -153,13 +139,13 @@ class AnimatedSprite:
                 new_end = main_tag.end - tag.end
 
                 sub_tags.append(
-                    Tag(tag.name, new_start, new_end, tag.direction_type, tag.repeat)
+                    Tag(tag.name, new_start, new_end, tag.direction, tag.repeat)
                 )
 
         return AnimatedSprite(
             self.__frames[main_tag.start : main_tag.end + 1],
             main_tag.repeat,
-            main_tag.direction_type,
+            main_tag.direction,
             sub_tags,
         )
 

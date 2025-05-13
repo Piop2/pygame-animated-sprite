@@ -1,7 +1,5 @@
-import sprite
-import direction
+from .sprite import AnimatedSprite
+from .direction import Forward, Reverse
+from .struct import Frame, Tag
 
-AnimatedSprite = sprite.AnimatedSprite
-DirectionType = direction.DirectionType
-
-del sprite, direction
+import encoder
