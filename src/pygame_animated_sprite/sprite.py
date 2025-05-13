@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Sequence, final, overload
+from typing import Optional, Sequence, final
 from os import PathLike
 from pathlib import Path
 
@@ -23,7 +23,6 @@ from .encoder.base import (
 
 @final
 class AnimatedSprite:
-    @overload
     def __init__(
         self,
         frames: Sequence[Frame],
@@ -90,20 +89,44 @@ class AnimatedSprite:
             data.tags,
         )
 
+    @property
+    def frames(self) -> list[Frame]:
+        return self.__direction.get_repeat()
+
+    @frames.setter
+    def frames(self, new: list[Frame]) -> None:
+        self.__frames = new
+        return
+
+    @property
+    def tags(self) -> dict[str, Tag]:
+        return self.__tags
+
+    @tags.setter
+    def tags(self, new: dict[str, Tag]) -> None:
+        self.__tags = new
+        return
+
+    @property
+    def repeat(self) -> int:
+        return self.repeat
+
+    @repeat.setter
+    def repeat(self, new: int) -> None:
+        raise NotImplementedError
+
+    @property
+    def index(self) -> int:
+        return self.__index
+
+    def get_time(self) -> int:
+        return self.__timer.get_time()
+
     def get_current_frame(self) -> Frame:
         if not self.__frames:
             raise RuntimeError
 
         return self.__frames[self.__index]
-
-    def get_frames(self) -> tuple[Frame]:
-        return self.__frames
-
-    def get_index(self) -> int:
-        return self.__index
-
-    def get_tags(self) -> tuple[Tag, ...]:
-        return tuple(self.__tags.values())
 
     def is_playing(self) -> bool:
         return self.__timer.is_paused()
