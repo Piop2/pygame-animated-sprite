@@ -93,12 +93,13 @@ class AnimatedSprite:
         )
 
     @property
-    def frames(self) -> list[Frame]:
-        return self.__direction.get_repeat()
+    def frames(self) -> tuple[Frame]:
+        return tuple(self.__frames)
 
     @frames.setter
-    def frames(self, new: list[Frame]) -> None:
-        self.__frames = new
+    def frames(self, new: Sequence[Frame]) -> None:
+        self.__frames = list(new)
+        self.reset()
         return
 
     @property
