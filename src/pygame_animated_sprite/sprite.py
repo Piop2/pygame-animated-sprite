@@ -69,7 +69,7 @@ class AnimatedSprite:
 
     @classmethod
     def load(
-        cls,
+        cls: type[AnimatedSprite],
         *paths: str | PathLike,
         encoder: Optional[AnimatedSpriteEncoder] = None,
     ) -> AnimatedSprite:
@@ -91,6 +91,23 @@ class AnimatedSprite:
             data.direction,
             data.tags,
         )
+
+    @classmethod
+    def from_images(
+        cls: type[AnimatedSprite],
+        images: Sequence[Surface],
+        durations: Sequence[int],
+        repeat: int = 0,
+        direction: Optional[type[DirectionIterable]] = None,
+    ) -> AnimatedSprite:
+        if len(frames) != len(durations):
+            raise ValueError
+
+        frames: list[Frame] = []
+        for image, duration in zip(images, durations):
+            frames.append(Frame(image, duration))
+
+        return cls(frames, repeat, direction)
 
     @property
     def frames(self) -> tuple[Frame]:
