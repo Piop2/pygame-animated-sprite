@@ -4,8 +4,8 @@ from typing import Iterable, Iterator
 
 
 class DirectionIterable(Iterable):
-    def __init__(self, repeat: int, frame_length: int) -> None:
-        self.repeat: int = repeat
+    def __init__(self, repeat: float, frame_length: int) -> None:
+        self.repeat: float = repeat
         self.frame_length: int = frame_length
         return
 
@@ -14,9 +14,9 @@ class DirectionIterable(Iterable):
 
 
 class DirectionIterator(Iterator):
-    def __init__(self, repeat: int, frame_length: int) -> None:
+    def __init__(self, repeat: float, frame_length: int) -> None:
         super().__init__()
-        self.repeat: int = repeat
+        self.repeat: float = repeat
         self.frame_length: int = frame_length
         self.index: int = 0
         return
@@ -42,7 +42,7 @@ class ForwardIterator(DirectionIterator):
         frame_index: int = self.index
         if frame_index == self.frame_length:
             self.repeat -= 1
-            if self.repeat < 0:
+            if self.repeat == 0:
                 raise StopIteration
 
             self.index = 0
@@ -70,7 +70,7 @@ class ReverseIterator(DirectionIterator):
         frame_index: int = self.index
         if frame_index == 0:
             self.repeat -= 1
-            if self.repeat < 0:
+            if self.repeat == 0:
                 raise StopIteration
 
             self.index = self.frame_length - 1
@@ -102,7 +102,7 @@ class PingPongIterator(DirectionIterator):
         frame_index: int = self.index
         if frame_index == -1 and self._direction == -1:
             self.repeat -= 1
-            if self.repeat < 0:
+            if self.repeat == 0:
                 raise StopIteration
 
             self.index = 0
@@ -140,7 +140,7 @@ class PingPongReverseIterator(DirectionIterator):
         frame_index: int = self.index
         if frame_index == self.frame_length and self._direction == 1:
             self.repeat -= 1
-            if self.repeat < 0:
+            if self.repeat == 0:
                 raise StopIteration
 
             self.index = self.frame_length - 1
