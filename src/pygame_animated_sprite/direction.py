@@ -14,11 +14,11 @@ class DirectionIterable(Iterable):
 
 
 class DirectionIterator(Iterator):
-    def __init__(self, repeat: int, frame_length: int, start_index: int = 0) -> None:
+    def __init__(self, repeat: int, frame_length: int) -> None:
         super().__init__()
         self.repeat: int = repeat
         self.frame_length: int = frame_length
-        self.index: int = start_index
+        self.index: int = 0
         return
 
     def __next__(self) -> int:
@@ -31,8 +31,8 @@ class Forward(DirectionIterable):
 
 
 class ForwardIterator(DirectionIterator):
-    def __init__(self, repeat, frame_length, start_index=0) -> None:
-        super().__init__(repeat=repeat, frame_length=frame_length, start_index=0)
+    def __init__(self, repeat, frame_length) -> None:
+        super().__init__(repeat=repeat, frame_length=frame_length)
         return
 
     def __next__(self) -> int:
@@ -58,10 +58,11 @@ class Reverse(DirectionIterable):
 
 
 class ReverseIterator(DirectionIterator):
-    def __init__(self, repeat, frame_length, start_index=0) -> None:
+    def __init__(self, repeat, frame_length) -> None:
         super().__init__(
-            repeat=repeat, frame_length=frame_length, start_index=frame_length - 1
+            repeat=repeat, frame_length=frame_length
         )
+        self.index = frame_length - 1
         return
 
     def __next__(self) -> int:
