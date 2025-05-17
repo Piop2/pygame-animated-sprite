@@ -37,7 +37,9 @@ class AnimatedSprite:
         self.__tags: dict[str, Tag] = tags
 
         # origin repeat
-        self.__repeat: int = repeat
+        if repeat == 0:
+            repeat = float("inf")
+        self.__repeat: float = float(repeat)
 
         if direction is None:
             direction = Forward
