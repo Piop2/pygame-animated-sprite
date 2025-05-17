@@ -4,8 +4,8 @@ from typing import Iterable, Iterator
 
 
 class DirectionIterable(Iterable):
-    def __init__(self, repeat: int, frame_length: int) -> None:
-        self.repeat: int = repeat
+    def __init__(self, repeat: float, frame_length: int) -> None:
+        self.repeat: float = repeat
         self.frame_length: int = frame_length
         return
 
@@ -14,9 +14,9 @@ class DirectionIterable(Iterable):
 
 
 class DirectionIterator(Iterator):
-    def __init__(self, repeat: int, frame_length: int) -> None:
+    def __init__(self, repeat: float, frame_length: int) -> None:
         super().__init__()
-        self.repeat: int = repeat
+        self.repeat: float = repeat
         self.frame_length: int = frame_length
         self.index: int = 0
         return
