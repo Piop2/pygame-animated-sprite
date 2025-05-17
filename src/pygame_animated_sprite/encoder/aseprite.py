@@ -7,8 +7,9 @@ import json
 import pygame.image
 from pygame import Surface
 
-from ..direction import DirectionIterable, Forward, Reverse
+from ..direction import DirectionIterable, Forward, Reverse, PingPong, PingPongReverse
 from ..struct import Frame, Tag
+from .._utils import clip_surface
 from .base import AnimatedSpriteEncoder, AnimatedSpriteData
 
 
@@ -80,20 +81,27 @@ class AsepriteEncoder(AnimatedSpriteEncoder):
                 case "reverse":
                     tag_direction = Reverse
                 case "pingpong":
-                    pass
+                    tag_direction = PingPong
                 case "pingpong_reverse":
-                    pass
+                    tag_direction = PingPongReverse
                 case _:
                     NotImplementedError(
                         f"not implemented direction: {tag_data['direction']}"
                     )
+
+            tag_repeat: int
+            try:
+                tag_repeat = int(tag_data["repeat"])
+            except KeyError:
+                tag_repeat = 0
 
             tags.append(
                 Tag(
                     tag_data["name"],
                     tag_data["from"],
                     tag_data["to"] + 1,
-                    tag_direction
+                    tag_direction,
+                    tag_repeat,
                 )
             )
 
@@ -106,6 +114,20 @@ class AsepriteEncoder(AnimatedSpriteEncoder):
         for frame_data in frame_list:
             frame_rect: __Rect = frame_data["frame"]
             duration: int = frame_data["duration"]
+            frames.append(
+                Frame(
+                    clip_surface(
+                        packed_image,
+                        frame_rect["x"],
+                        frame_rect["y"],
+                        frame_rect["w"],
+                        frame_rect["h"],
+                    ),
+                    duration,
+                )
+            )
+
+        return AnimatedSpriteData(frames=frames, repeat=0, direction=Forward, tags=tags)
 
     def load_folder(self, path: Path) -> AnimatedSpriteData:
         pass
