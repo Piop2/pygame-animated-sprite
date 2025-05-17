@@ -115,3 +115,41 @@ class PingPongIterator(DirectionIterator):
 
         self.index += self._direction
         return frame_index
+
+
+class PingPongReverse(DirectionIterable):
+    def __init__(self, repeat, frame_length) -> None:
+        super().__init__(repeat, frame_length)
+        return
+
+    def __iter__(self) -> PingPongReverseIterator:
+        return PingPongReverseIterator(self.repeat, self.frame_length)
+
+
+class PingPongReverseIterator(DirectionIterator):
+    def __init__(self, repeat, frame_length) -> None:
+        super().__init__(repeat, frame_length)
+        self.index = frame_length - 1
+        self._direction: int = -1
+        return
+
+    def __next__(self) -> int:
+        if self.frame_length == 0:
+            raise StopIteration
+
+        frame_index: int = self.index
+        if frame_index == self.frame_length and self._direction == 1:
+            self.repeat -= 1
+            if self.repeat < 0:
+                raise StopIteration
+
+            self.index = self.frame_length - 1
+            return frame_index
+
+        if frame_index == 0 and self._direction == -1:
+            self._direction = 1
+        if frame_index == self.frame_length and self._direction == 1:
+            self._direction = -1
+
+        self.index += self._direction
+        return frame_index
