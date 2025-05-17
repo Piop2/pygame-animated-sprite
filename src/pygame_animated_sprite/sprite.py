@@ -37,11 +37,7 @@ class AnimatedSprite:
         self.__tags: dict[str, Tag] = tags
 
         # origin repeat
-<<<<<<< HEAD
         if repeat == 0:
-=======
-        if repeat == -1:
->>>>>>> 834cd2089b4f345c1296e137c22d5fdf6433fc64
             repeat = float("inf")
         self.__repeat: float = float(repeat)
 
