@@ -155,7 +155,7 @@ class AnimatedSprite:
         return
 
     def get_time(self) -> int:
-        return self.__timer.get_time()
+        return self.__timer.time
 
     def get_current_frame(self) -> Frame:
         if not self.__frames:
@@ -211,7 +211,7 @@ class AnimatedSprite:
         if not self.is_playing():
             return
 
-        if self.__timer.get_time() >= self.__frames[self.__index].duration:
+        if self.__timer.time >= self.__frames[self.__index].duration:
             try:
                 self.__index = next(self.__direction_iterator)
             except StopIteration:
