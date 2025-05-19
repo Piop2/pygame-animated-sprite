@@ -102,7 +102,7 @@ class AnimatedSprite:
         repeat: int = 0,
         direction: Optional[type[DirectionIterable]] = None,
     ) -> AnimatedSprite:
-        if len(frames) != len(durations):
+        if len(images) != len(durations):
             raise ValueError
 
         frames: list[Frame] = []
