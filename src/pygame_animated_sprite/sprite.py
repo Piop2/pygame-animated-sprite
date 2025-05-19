@@ -211,11 +211,15 @@ class AnimatedSprite:
         if not self.is_playing():
             return
 
-        if self.__timer.time >= self.__frames[self.__index].duration:
+        if self.__timer.time >= (
+            frame_duration := self.__frames[self.__index].duration
+        ):
             try:
                 self.__index = next(self.__direction_iterator)
             except StopIteration:
                 self.pause()
+
+            self.__timer.time -= frame_duration
 
         self.__timer.update(ms)
         return
