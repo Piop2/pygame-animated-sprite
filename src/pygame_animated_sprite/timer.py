@@ -46,7 +46,7 @@ class CountUpTimer(BaseTimer):
         return
 
     def update(self, ms: int) -> None:
-        if self._is_paused:
+        if self.is_paused():
             return
 
         self._time += ms
