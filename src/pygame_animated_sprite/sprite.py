@@ -90,7 +90,7 @@ class AnimatedSprite:
         )
 
     @classmethod
-    def from_images(
+    def from_surfaces(
         cls: type[AnimatedSprite],
         images: Sequence[Surface],
         durations: Sequence[int],
