@@ -26,23 +26,18 @@ class AnimatedSprite:
     def __init__(
         self,
         frames: Sequence[Frame],
-        repeat: int = 0,
-        direction: Optional[type[DirectionIterable]] = None,
-        tags: Optional[dict[str, Tag]] = None,
+        repeat: int,
+        direction: type[DirectionIterable],
+        tags: dict[str, Tag],
     ) -> None:
         self.__frames: list[Frame] = list(frames)
-
-        if tags is None:
-            tags = dict()
         self.__tags: dict[str, Tag] = tags
 
         # origin repeat
-        if repeat == 0:
+        if repeat <= 0:
             repeat = float("inf")
         self.__repeat: float = float(repeat)
 
-        if direction is None:
-            direction = Forward
         self.__direction: DirectionIterable = direction(
             repeat=repeat, frame_length=len(frames)
         )
@@ -109,7 +104,10 @@ class AnimatedSprite:
         for image, duration in zip(images, durations):
             frames.append(Frame(image, duration))
 
-        return cls(frames, repeat, direction)
+        if direction is None:
+            direction = Forward
+
+        return cls(frames=frames, repeat=repeat, direction=direction, tags={})
 
     @property
     def frames(self) -> tuple[Frame]:
