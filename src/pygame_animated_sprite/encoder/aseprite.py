@@ -49,7 +49,7 @@ __Meta = TypedDict(
 )
 
 
-class AsepriteEncoder(AnimatedSpriteEncoder):
+class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
     """Aseprite sprite sheet encoder"""
 
     def __init__(self, json_type: Literal["array", "hash"], tags: bool = False) -> None:
