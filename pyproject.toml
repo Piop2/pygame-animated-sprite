@@ -1,6 +1,6 @@
 [project]
 name = "pygame-animated-sprite"
-version = "1.2.1"
+version = "1.2.2"
 authors = [
     {name = "Pio", email = "pioooop2@gmail.com"},
 ]
