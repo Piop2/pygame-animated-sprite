@@ -67,7 +67,7 @@ class AnimatedSprite:
     @classmethod
     def load(
         cls: type[AnimatedSprite],
-        *paths: str | PathLike,
+        path: str | PathLike,
         encoder: Optional[AnimatedSpriteEncoder] = None,
     ) -> AnimatedSprite:
         if encoder is None:
@@ -80,7 +80,7 @@ class AnimatedSprite:
 
             encoder = DefaultEncoder()
 
-        data: AnimatedSpriteData = encoder.load(*paths)
+        data: AnimatedSpriteData = encoder.load(path)
 
         return cls(
             data.frames,
@@ -92,16 +92,16 @@ class AnimatedSprite:
     @classmethod
     def from_surfaces(
         cls: type[AnimatedSprite],
-        images: Sequence[Surface],
+        surfaces: Sequence[Surface],
         durations: Sequence[int],
         repeat: int = 0,
         direction: Optional[type[DirectionIterable]] = None,
     ) -> AnimatedSprite:
-        if len(images) != len(durations):
+        if len(surfaces) != len(durations):
             raise ValueError
 
         frames: list[Frame] = []
-        for image, duration in zip(images, durations):
+        for image, duration in zip(surfaces, durations):
             frames.append(Frame(image, duration))
 
         if direction is None:
@@ -205,7 +205,7 @@ class AnimatedSprite:
             sub_tags,
         )
 
-    def update(self, ms: int) -> None:
+    def update(self, time_delta: int) -> None:
         if not self.is_playing():
             return
 
@@ -219,7 +219,7 @@ class AnimatedSprite:
 
             self.__timer.time -= frame_duration
 
-        self.__timer.update(ms)
+        self.__timer.update(time_delta)
         return
 
     def render(self) -> Surface:
