@@ -33,37 +33,10 @@ class AnimatedSpriteEncoder:
     def load_folder(self, path: Path) -> AnimatedSpriteData:
         raise NotImplementedError
 
-    def load(self, *paths: str) -> AnimatedSpriteData:
-        paths: list[Path] = [Path(str_path) for str_path in paths]
-
-        frames: tuple[Frame] = ()
-        repeat: int = 0
-        direction: DirectionIterable = Forward
-        tags: dict[str, Tag] = {}
-
-        for path in paths:
-            data: AnimatedSpriteData
-            if path.is_file():
-                data = self.load_file(path)
-            else:
-                data = self.load_folder(path)
-
-            if data.frames is not None:
-                frames += data.frames
-
-            if data.repeat is not None:
-                repeat = data.repeat
-
-            if data.direction is not None:
-                direction = data.direction
-
-            if data.tags is not None:
-                for tag_name, tag in data.tags.items():
-                    tags[tag_name] = tag
-
-        return AnimatedSpriteData(
-            frames=frames, repeat=repeat, direction=direction, tags=tags
-        )
+    def load(self, path: str) -> AnimatedSpriteData:
+        if path.is_file():
+            return self.load_file(path)
+        return self.load_folder(path)
 
 
 class UnsupportedFileFormatError(Exception):

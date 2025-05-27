@@ -67,7 +67,7 @@ class AnimatedSprite:
     @classmethod
     def load(
         cls: type[AnimatedSprite],
-        *paths: str | PathLike,
+        path: str | PathLike,
         encoder: Optional[AnimatedSpriteEncoder] = None,
     ) -> AnimatedSprite:
         if encoder is None:
@@ -80,7 +80,7 @@ class AnimatedSprite:
 
             encoder = DefaultEncoder()
 
-        data: AnimatedSpriteData = encoder.load(*paths)
+        data: AnimatedSpriteData = encoder.load(path)
 
         return cls(
             data.frames,
