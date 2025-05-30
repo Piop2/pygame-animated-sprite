@@ -42,6 +42,7 @@ class AnimatedSprite:
             repeat=repeat, frame_length=len(frames)
         )
 
+        # TODO Timer setter 지웠음... 다른 방향으로 로직 짜기: Timer 인터페이스 캡슐화
         self.__timer: CountUpTimer = CountUpTimer()
 
         self.__direction_iterator: DirectionIterator = iter(self.__direction)
