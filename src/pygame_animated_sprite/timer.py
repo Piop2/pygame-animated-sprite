@@ -14,11 +14,6 @@ class BaseTimer(ABC):
     def time(self) -> int:
         return self._time
 
-    @time.setter
-    def time(self, new: int) -> None:
-        self._time = new
-        return
-
     def is_paused(self) -> bool:
         return self.__is_paused
 
