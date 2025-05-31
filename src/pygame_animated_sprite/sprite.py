@@ -42,8 +42,8 @@ class AnimatedSprite:
             repeat=repeat, frame_length=len(frames)
         )
 
-        # TODO Timer setter 지웠음... 다른 방향으로 로직 짜기: Timer 인터페이스 캡슐화
         self.__timer: CountUpTimer = CountUpTimer()
+        self.__prev_time: int = 0
 
         self.__direction_iterator: DirectionIterator = iter(self.__direction)
         self.__index: int = next(self.__direction_iterator)
@@ -176,6 +176,7 @@ class AnimatedSprite:
     def reset(self) -> None:
         self.play()
         self.__timer.reset()
+        self.__prev_time = 0
         self.__direction_iterator = iter(self.__direction)
         self.__index = next(self.__direction_iterator)
         return
@@ -210,15 +211,13 @@ class AnimatedSprite:
         if not self.is_playing():
             return
 
-        if self.__timer.time >= (
-            frame_duration := self.__frames[self.__index].duration
-        ):
+        if self.__timer.time - self.__prev_time >= self.__frames[self.__index].duration:
             try:
                 self.__index = next(self.__direction_iterator)
             except StopIteration:
                 self.pause()
 
-            self.__timer.time -= frame_duration
+            self.__prev_time = self.__timer.time
 
         self.__timer.update(time_delta)
         return
