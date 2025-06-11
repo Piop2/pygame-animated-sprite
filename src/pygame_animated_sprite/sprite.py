@@ -214,8 +214,10 @@ class AnimatedSprite:
                 self.__index = next(self.__direction_iterator)
             except StopIteration:
                 self.pause()
-            
-            overflow_time: int = self.__timer.time - self.__frames[self.__index].duration
+
+            overflow_time: int = (
+                self.__timer.time - self.__frames[self.__index].duration
+            )
             self.__timer.reset()
             self.__timer.update(overflow_time)
 
