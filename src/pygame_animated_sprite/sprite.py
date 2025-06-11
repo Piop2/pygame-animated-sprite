@@ -7,14 +7,14 @@ from pathlib import Path
 import pygame.image
 from pygame import Surface, Vector2
 
-from .timer import CountUpTimer
-from .direction import (
+from pygame_animated_sprite.timer import CountUpTimer
+from pygame_animated_sprite.direction import (
     DirectionIterable,
     DirectionIterator,
     Forward,
 )
-from .struct import Tag, Frame
-from .encoder.base import (
+from pygame_animated_sprite.struct import Tag, Frame
+from pygame_animated_sprite.encoder.base import (
     AnimatedSpriteEncoder,
     AnimatedSpriteData,
     UnsupportedFileFormatError,

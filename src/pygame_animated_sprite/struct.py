@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from pygame import Surface
 
-from .direction import DirectionIterable
+from pygame_animated_sprite.direction import DirectionIterable
 
 
 @dataclass(frozen=True)
