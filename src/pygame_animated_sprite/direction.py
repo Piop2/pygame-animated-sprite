@@ -9,7 +9,7 @@ class DirectionIterable(Iterable):
         self.frame_length: int = frame_length
         return
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> DirectionIterator:
         raise NotImplementedError
 
 

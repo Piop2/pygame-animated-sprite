@@ -4,7 +4,7 @@ from typing import Optional
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..direction import DirectionIterable, Forward
+from ..direction import DirectionIterable
 from ..struct import Frame, Tag
 
 
@@ -12,7 +12,7 @@ from ..struct import Frame, Tag
 class AnimatedSpriteData:
     frames: Optional[tuple[Frame, ...]] = None
     repeat: Optional[int] = None
-    direction: Optional[DirectionIterable] = None
+    direction: Optional[type[DirectionIterable]] = None
     tags: Optional[dict[str, Tag]] = None
 
 
@@ -33,7 +33,7 @@ class AnimatedSpriteEncoder:
     def load_folder(self, path: Path) -> AnimatedSpriteData:
         raise NotImplementedError
 
-    def load(self, path: str) -> AnimatedSpriteData:
+    def load(self, path: Path) -> AnimatedSpriteData:
         if path.is_file():
             return self.load_file(path)
         return self.load_folder(path)

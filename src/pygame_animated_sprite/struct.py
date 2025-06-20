@@ -12,11 +12,11 @@ class Tag:
     name: str
     start: int
     end: int
-    direction: DirectionIterable
+    direction: type[DirectionIterable]
     repeat: int
 
     def copy(self) -> Tag:
-        return Tag(self.name, self.start, self.end, self.direction_type, self.repeat)
+        return Tag(self.name, self.start, self.end, self.direction, self.repeat)
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Any
 from pathlib import Path
 import json
 
@@ -23,6 +23,7 @@ __Frames = TypedDict(
         "trimmed": bool,
         "spriteSourceSize": __Rect,
         "sourceSize": __Size,
+        "duration": int,
     },
 )
 __Tag = TypedDict(
@@ -31,6 +32,7 @@ __Tag = TypedDict(
         "name": str,
         "from": int,
         "to": int,
+        "repeat": int,
         "direction": Literal["forward", "reverse", "pingpong", "pingpong_reverse"],
         "color": str,
     },
@@ -63,18 +65,20 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
 
     def load_file(self, path: Path) -> AnimatedSpriteData:
         if path.suffix != ".json":
-            return
+            return AnimatedSpriteData()
 
         frames: list[Frame] = []
-        tags: list[Tag] = []
+        tags: dict[str, Tag] = {}
 
-        data: dict[str, any] = json.load(path.as_posix)
+        data: dict[str, Any]
+        with open(path.as_posix(), "r") as file:
+            data = json.load(file)
         # ---------meta---------
         meta_data: __Meta = data["meta"]
 
         packed_image: Surface = pygame.image.load(f"{path.parent}/{meta_data['image']}")
         for tag_data in meta_data["frameTags"]:
-            tag_direction: DirectionIterable
+            tag_direction: type[DirectionIterable] = Forward
             match tag_data["direction"]:
                 case "forward":
                     tag_direction = Forward
@@ -95,18 +99,16 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
             except KeyError:
                 tag_repeat = 0
 
-            tags.append(
-                Tag(
-                    tag_data["name"],
-                    tag_data["from"],
-                    tag_data["to"] + 1,
-                    tag_direction,
-                    tag_repeat,
-                )
+            tags[tag_data["name"]] = Tag(
+                name=tag_data["name"],
+                start=tag_data["from"],
+                end=tag_data["to"] + 1,
+                direction=tag_direction,
+                repeat=tag_repeat,
             )
 
         # --------frames--------
-        frame_list: list[dict[str, any]]
+        frame_list: list[__Frames] = []
         if self.json_type == "hash":
             frame_list = list(data["frames"].values())
 
@@ -127,7 +129,9 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
                 )
             )
 
-        return AnimatedSpriteData(frames=frames, repeat=0, direction=Forward, tags=tags)
+        return AnimatedSpriteData(
+            frames=tuple(frames), repeat=0, direction=Forward, tags=tags
+        )
 
     def load_folder(self, path: Path) -> AnimatedSpriteData:
-        pass
+        raise NotImplementedError

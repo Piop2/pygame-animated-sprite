@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Optional, Sequence, final
-from os import PathLike
 from pathlib import Path
 
 import pygame.image
@@ -34,9 +33,11 @@ class AnimatedSprite:
         self.__tags: dict[str, Tag] = tags
 
         # origin repeat
+        self.__repeat: float
         if repeat <= 0:
-            repeat = float("inf")
-        self.__repeat: float = float(repeat)
+            self.__repeat = float("inf")
+        else:
+            self.__repeat = float(repeat)
 
         self.__direction: DirectionIterable = direction(
             repeat=repeat, frame_length=len(frames)
@@ -59,7 +60,9 @@ class AnimatedSprite:
             return self.slice_by_tag(key)
 
         elif isinstance(key, slice):  # slice by slice obj
-            return AnimatedSprite(self.__frames[key])
+            return AnimatedSprite(
+                frames=self.__frames[key], repeat=0, direction=Forward, tags={}
+            )
 
         raise TypeError
         return
@@ -67,7 +70,7 @@ class AnimatedSprite:
     @classmethod
     def load(
         cls: type[AnimatedSprite],
-        path: str | PathLike,
+        path: str,
         encoder: Optional[AnimatedSpriteEncoder] = None,
     ) -> AnimatedSprite:
         if encoder is None:
@@ -76,17 +79,19 @@ class AnimatedSprite:
                 def load_file(self, path: Path) -> AnimatedSpriteData:
                     if path.suffix not in [".png", ".jpeg", ".jpg"]:
                         raise UnsupportedFileFormatError
-                    return AnimatedSpriteData(frames=[pygame.image.load(path)])
+                    return AnimatedSpriteData(
+                        frames=(Frame(image=pygame.image.load(path), duration=0),)
+                    )
 
             encoder = DefaultEncoder()
 
-        data: AnimatedSpriteData = encoder.load(path)
+        data: AnimatedSpriteData = encoder.load(Path(path))
 
         return cls(
-            data.frames,
-            data.repeat,
-            data.direction,
-            data.tags,
+            frames=data.frames if data.frames is not None else [],
+            repeat=data.repeat if data.repeat is not None else 0,
+            direction=data.direction if data.direction is not None else Forward,
+            tags=data.tags if data.tags is not None else {},
         )
 
     @classmethod
@@ -110,7 +115,7 @@ class AnimatedSprite:
         return cls(frames=frames, repeat=repeat, direction=direction, tags={})
 
     @property
-    def frames(self) -> tuple[Frame]:
+    def frames(self) -> tuple[Frame, ...]:
         return tuple(self.__frames)
 
     @frames.setter
@@ -130,7 +135,7 @@ class AnimatedSprite:
 
     @property
     def repeat(self) -> int:
-        return self.__repeat
+        return int(self.__repeat)
 
     @repeat.setter
     def repeat(self, new: int) -> None:
@@ -185,8 +190,8 @@ class AnimatedSprite:
 
         main_tag: Tag = self.__tags[tag_name]
 
-        sub_tags: list[Tag] = []
-        for tag in list(self.__tags.values()):
+        sub_tags: dict[str, Tag] = {}
+        for name, tag in self.__tags.items():
             if tag == main_tag:
                 continue
 
@@ -194,15 +199,19 @@ class AnimatedSprite:
                 new_start = tag.start - main_tag.start
                 new_end = main_tag.end - tag.end
 
-                sub_tags.append(
-                    Tag(tag.name, new_start, new_end, tag.direction, tag.repeat)
+                sub_tags[name] = Tag(
+                    name=tag.name,
+                    start=new_start,
+                    end=new_end,
+                    direction=tag.direction,
+                    repeat=tag.repeat,
                 )
 
         return AnimatedSprite(
-            self.__frames[main_tag.start : main_tag.end + 1],
-            main_tag.repeat,
-            main_tag.direction,
-            sub_tags,
+            frames=self.__frames[main_tag.start : main_tag.end + 1],
+            repeat=main_tag.repeat,
+            direction=main_tag.direction,
+            tags=sub_tags,
         )
 
     def update(self, time_delta: int) -> None:
