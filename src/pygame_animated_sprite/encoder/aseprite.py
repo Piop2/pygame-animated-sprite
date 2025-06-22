@@ -10,7 +10,7 @@ from pygame import Surface
 from ..direction import DirectionIterable, Forward, Reverse, PingPong, PingPongReverse
 from ..struct import Frame, Tag
 from .._utils import clip_surface
-from .base import AnimatedSpriteEncoder, AnimatedSpriteData
+from .base import AnimatedSpriteEncoder, AnimatedSpriteData, UnsupportedFileFormatError
 
 
 __Size = TypedDict("__Size", {"w": int, "h": int})
@@ -54,18 +54,25 @@ __Meta = TypedDict(
 class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
     """Aseprite sprite sheet encoder"""
 
-    def __init__(self, json_type: Literal["array", "hash"], tags: bool = False) -> None:
+    def __init__(
+        self,
+        json_type: Literal["array", "hash"],
+        tags: bool = False,
+        file_suffix: str = ".json",
+    ) -> None:
         self.json_type: Literal["array", "hash"] = json_type
 
         # meta
         self.tags: bool = tags
         # self.layers
         # self.slices
+
+        self.file_suffix: str = file_suffix
         return
 
     def load_file(self, path: Path) -> AnimatedSpriteData:
         if path.suffix != ".json":
-            return AnimatedSpriteData()
+            raise UnsupportedFileFormatError
 
         frames: list[Frame] = []
         tags: dict[str, Tag] = {}
