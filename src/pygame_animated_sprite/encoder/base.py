@@ -16,16 +16,6 @@ class AnimatedSpriteData:
     tags: Optional[dict[str, Tag]] = None
 
 
-# class __Singleton(type):
-#     __instances: dict[str, __Singleton] = {}
-
-#     def __call__(cls: __Singleton, *args, **kwargs) -> any:
-#         if (class_name := cls.__class__.__name__) not in cls.__instances:
-#             cls.__instances[class_name] = super().__call__(*args, **kwargs)
-
-#         return cls.__instances[class_name]
-
-
 class AnimatedSpriteEncoder:
     def load_file(self, path: Path) -> AnimatedSpriteData:
         raise NotImplementedError
