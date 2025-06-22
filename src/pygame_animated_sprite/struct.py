@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import dataclass, asdict
 
 from pygame import Surface
 
@@ -16,7 +17,7 @@ class Tag:
     repeat: int
 
     def copy(self) -> Tag:
-        return Tag(self.name, self.start, self.end, self.direction, self.repeat)
+        return self.__class__(**deepcopy(asdict(self)))
 
 
 @dataclass(frozen=True)
@@ -25,4 +26,4 @@ class Frame:
     duration: int
 
     def copy(self) -> Frame:
-        return Frame(self.image.copy(), self.duration)
+        return self.__class__(**deepcopy(asdict(self)))
