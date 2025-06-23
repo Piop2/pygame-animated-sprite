@@ -1,10 +1,10 @@
 # Pygame Animated Sprite
 > Animated sprite package for pygame
 
-## Installation
+## Install
 
 ```sh
-pip install git+https://github.com/Piop2/pygame-animated-sprite.git
+pip install git+https://github.com/Piop2/pygame-animated-sprite.git@main
 ```
 
 ## Usage
