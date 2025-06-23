@@ -5,12 +5,22 @@ from typing import Iterable, Iterator
 
 class DirectionIterable(Iterable):
     def __init__(self, repeat: float, frame_length: int) -> None:
-        self.repeat: float = repeat
+        self._repeat: float = repeat
         self.frame_length: int = frame_length
         return
 
     def __iter__(self) -> DirectionIterator:
         raise NotImplementedError
+
+    @property
+    def repeat(self) -> float:
+        return self._repeat
+    
+    @repeat.setter
+    def repeat(self, new: int | float) -> None:
+        if new <= 0:
+            new = float("inf")
+        self._repeat = float(new)
 
 
 class DirectionIterator(Iterator):
