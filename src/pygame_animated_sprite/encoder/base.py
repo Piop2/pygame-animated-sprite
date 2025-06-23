@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass
-from pathlib import Path
 
-from ..direction import DirectionIterable
-from ..struct import Frame, Tag
+from pygame_animated_sprite.direction import DirectionIterable
+from pygame_animated_sprite.struct import Frame, Tag
 
 
 @dataclass(frozen=True)

@@ -1,16 +1,26 @@
 from __future__ import annotations
 
-from typing import Literal, TypedDict, Any
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import Literal, TypedDict, Any
 
 import pygame.image
 from pygame import Surface
 
-from ..direction import DirectionIterable, Forward, Reverse, PingPong, PingPongReverse
-from ..struct import Frame, Tag
-from .._utils import clip_surface
-from .base import AnimatedSpriteEncoder, AnimatedSpriteData, UnsupportedFileFormatError
+from pygame_animated_sprite._utils import clip_surface
+from pygame_animated_sprite.struct import Frame, Tag
+from pygame_animated_sprite.direction import (
+    DirectionIterable,
+    Forward,
+    Reverse,
+    PingPong,
+    PingPongReverse,
+)
+from pygame_animated_sprite.encoder.base import (
+    AnimatedSpriteEncoder,
+    AnimatedSpriteData,
+    UnsupportedFileFormatError,
+)
 
 
 __Size = TypedDict("__Size", {"w": int, "h": int})
