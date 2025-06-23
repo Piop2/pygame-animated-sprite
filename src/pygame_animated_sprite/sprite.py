@@ -33,14 +33,13 @@ class AnimatedSprite:
         self.__tags: dict[str, Tag] = tags
 
         # origin repeat
-        self.__repeat: float
+        self.__repeat: int
         if repeat <= 0:
-            self.__repeat = float("inf")
-        else:
-            self.__repeat = float(repeat)
+            self.__repeat = repeat = 0
 
         self.__direction: DirectionIterable = direction(
-            repeat=repeat, frame_length=len(frames)
+            repeat=repeat,
+            frame_length=len(frames),
         )
 
         self.__timer: CountUpTimer = CountUpTimer()
@@ -135,7 +134,7 @@ class AnimatedSprite:
 
     @property
     def repeat(self) -> int:
-        return int(self.__repeat)
+        return self.__repeat
 
     @repeat.setter
     def repeat(self, new: int) -> None:
@@ -153,7 +152,10 @@ class AnimatedSprite:
 
     @direction.setter
     def direction(self, new: type[DirectionIterable]) -> None:
-        self.__direction = new(repeat=self.__repeat, frame_length=len(self.__frames))
+        self.__direction = new(
+            repeat=self.__repeat,
+            frame_length=len(self.__frames),
+        )
         self.reset()
         return
 
@@ -196,8 +198,8 @@ class AnimatedSprite:
                 continue
 
             if main_tag.start <= tag.start and tag.end <= main_tag.end:
-                new_start = tag.start - main_tag.start
-                new_end = main_tag.end - tag.end
+                new_start: int = tag.start - main_tag.start
+                new_end: int = main_tag.end - tag.end
 
                 sub_tags[name] = Tag(
                     name=tag.name,
