@@ -15,12 +15,13 @@ class DirectionIterable(Iterable):
     @property
     def repeat(self) -> float:
         return self._repeat
-    
+
     @repeat.setter
     def repeat(self, new: int | float) -> None:
         if new <= 0:
             new = float("inf")
         self._repeat = float(new)
+        return
 
 
 class DirectionIterator(Iterator):

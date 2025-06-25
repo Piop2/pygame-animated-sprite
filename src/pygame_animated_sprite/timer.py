@@ -48,25 +48,25 @@ class CountUpTimer(BaseTimer):
         return
 
 
-class CountDownTimer(BaseTimer):
-    def __init__(self, time: int = 0) -> None:
-        super().__init__(time)
-        self.__total_time: int = time
-        return
+# class CountDownTimer(BaseTimer):
+#     def __init__(self, time: int = 0) -> None:
+#         super().__init__(time)
+#         self.__total_time: int = time
+#         return
 
-    def get_total_time(self) -> int:
-        return self.__total_time
+#     def get_total_time(self) -> int:
+#         return self.__total_time
 
-    def is_done(self) -> bool:
-        return self._time == 0
+#     def is_done(self) -> bool:
+#         return self._time == 0
 
-    def reset(self) -> None:
-        self._time = self.__total_time
-        return
+#     def reset(self) -> None:
+#         self._time = self.__total_time
+#         return
 
-    def update(self, ms: int) -> None:
-        if self.is_paused():
-            return
+#     def update(self, ms: int) -> None:
+#         if self.is_paused():
+#             return
 
-        self._time -= ms
-        return
+#         self._time -= ms
+#         return
