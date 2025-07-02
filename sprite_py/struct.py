@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from sprite_py._texture import TextureProtocol
+from sprite_py._sprite import Sprite
 
 
 @dataclass(frozen=True)
@@ -16,5 +16,5 @@ class Tag:
 
 @dataclass(frozen=True)
 class Frame:
-    texture: TextureProtocol
+    sprite: Sprite
     duration: int
