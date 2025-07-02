@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pygame import Surface
-
-from pygame_animated_sprite.direction import DirectionIterable
+from sprite_py._texture import TextureProtocol
 
 
 @dataclass(frozen=True)
@@ -12,11 +10,11 @@ class Tag:
     name: str
     start: int
     end: int
-    direction: type[DirectionIterable]
+    # direction: type[DirectionIterable]
     repeat: int
 
 
 @dataclass(frozen=True)
 class Frame:
-    image: Surface
+    texture: TextureProtocol
     duration: int
