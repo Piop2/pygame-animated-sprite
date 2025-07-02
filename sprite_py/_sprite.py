@@ -76,5 +76,4 @@ class Sprite(ABC):
         return
 
     @abstractmethod
-    def draw(self, target: Any) -> None:
-        ...
+    def draw(self, target: Any) -> None: ...
