@@ -1,4 +1,4 @@
-from pygame import Surface, Rect
+from pygame import Surface
 
 
 def clip_surface(surface: Surface, x: int, y: int, x_size: int, y_size: int) -> Surface:
