@@ -139,3 +139,8 @@ class PingPong(Direction):
             self._current_index += self._direction
 
         return frame_index
+
+
+# TODO implement this one
+class PingPongReverse(Direction):
+    ...
