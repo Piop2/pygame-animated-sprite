@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass, field
 
-from pygame_animated_sprite.direction import DirectionIterable
+from pygame_animated_sprite.direction import Direction
 from pygame_animated_sprite.struct import Frame, Tag
 
 
@@ -12,7 +12,7 @@ from pygame_animated_sprite.struct import Frame, Tag
 class AnimatedSpriteData:
     frames: Optional[tuple[Frame, ...]] = field(default=None)
     repeat: Optional[int] = field(default=None)
-    direction: Optional[type[DirectionIterable]] = field(default=None)
+    direction: Optional[type[Direction]] = field(default=None)
     tags: Optional[dict[str, Tag]] = field(default=None)
 
 

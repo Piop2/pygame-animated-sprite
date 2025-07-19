@@ -8,8 +8,7 @@ from pygame import Surface, Vector2
 
 from pygame_animated_sprite.timer import CountUpTimer
 from pygame_animated_sprite.direction import (
-    DirectionIterable,
-    DirectionIterator,
+    Direction,
     Forward,
 )
 from pygame_animated_sprite.struct import Tag, Frame
@@ -25,8 +24,8 @@ class AnimatedSprite:
     def __init__(
         self,
         frames: Sequence[Frame],
-        repeat: int,
-        direction: type[DirectionIterable],
+        repeats: int,
+        direction: type[Direction],
         tags: dict[str, Tag],
     ) -> None:
         self.__frames: list[Frame] = list(frames)
@@ -34,18 +33,18 @@ class AnimatedSprite:
 
         # origin repeat
         self.__repeat: int
-        if repeat <= 0:
-            self.__repeat = repeat = 0
+        if repeats <= 0:
+            self.__repeats = repeats = 0
 
-        self.__direction: DirectionIterable = direction(
-            repeat=repeat,
-            frame_length=len(frames),
+        self.__direction: Direction = direction(
+            frame_count=len(frames),
+            repeats=repeats,
         )
 
         self.__timer: CountUpTimer = CountUpTimer()
 
-        self.__direction_iterator: DirectionIterator = iter(self.__direction)
-        self.__index: int = next(self.__direction_iterator)
+        iter(self.__direction)
+        self.__index: int = next(self.__direction)
         return
 
     def __len__(self) -> int:
@@ -60,11 +59,10 @@ class AnimatedSprite:
 
         elif isinstance(key, slice):  # slice by slice obj
             return AnimatedSprite(
-                frames=self.__frames[key], repeat=0, direction=Forward, tags={}
+                frames=self.__frames[key], repeats=0, direction=Forward, tags={}
             )
 
         raise TypeError
-        return
 
     @classmethod
     def load(
@@ -75,11 +73,11 @@ class AnimatedSprite:
         if encoder is None:
 
             class DefaultEncoder(AnimatedSpriteEncoder):
-                def load_file(self, path: Path) -> AnimatedSpriteData:
-                    if path.suffix not in [".png", ".jpeg", ".jpg"]:
+                def load_file(self, _path: Path) -> AnimatedSpriteData:
+                    if _path.suffix not in [".png", ".jpeg", ".jpg"]:
                         raise UnsupportedFileFormatError
                     return AnimatedSpriteData(
-                        frames=(Frame(image=pygame.image.load(path), duration=0),)
+                        frames=(Frame(image=pygame.image.load(_path), duration=0),)
                     )
 
             encoder = DefaultEncoder()
@@ -88,7 +86,7 @@ class AnimatedSprite:
 
         return cls(
             frames=data.frames if data.frames is not None else [],
-            repeat=data.repeat if data.repeat is not None else 0,
+            repeats=data.repeat if data.repeat is not None else 0,
             direction=data.direction if data.direction is not None else Forward,
             tags=data.tags if data.tags is not None else {},
         )
@@ -98,8 +96,8 @@ class AnimatedSprite:
         cls: type[AnimatedSprite],
         surfaces: Sequence[Surface],
         durations: Sequence[int],
-        repeat: int = 0,
-        direction: Optional[type[DirectionIterable]] = None,
+        repeats: int = 0,
+        direction: Optional[type[Direction]] = None,
     ) -> AnimatedSprite:
         if len(surfaces) != len(durations):
             raise ValueError
@@ -111,7 +109,7 @@ class AnimatedSprite:
         if direction is None:
             direction = Forward
 
-        return cls(frames=frames, repeat=repeat, direction=direction, tags={})
+        return cls(frames=frames, repeats=repeats, direction=direction, tags={})
 
     @property
     def frames(self) -> tuple[Frame, ...]:
@@ -134,7 +132,7 @@ class AnimatedSprite:
 
     @property
     def repeat(self) -> int:
-        return self.__repeat
+        return self.__repeats
 
     @repeat.setter
     def repeat(self, new: int) -> None:
@@ -147,14 +145,14 @@ class AnimatedSprite:
         return self.__index
 
     @property
-    def direction(self) -> type[DirectionIterable]:
+    def direction(self) -> type[Direction]:
         return self.__direction.__class__
 
     @direction.setter
-    def direction(self, new: type[DirectionIterable]) -> None:
+    def direction(self, new: type[Direction]) -> None:
         self.__direction = new(
-            repeat=self.__repeat,
-            frame_length=len(self.__frames),
+            frame_count=len(self.__frames),
+            repeats=self.__repeats,
         )
         self.reset()
         return
@@ -182,8 +180,8 @@ class AnimatedSprite:
     def reset(self) -> None:
         self.play()
         self.__timer.reset()
-        self.__direction_iterator = iter(self.__direction)
-        self.__index = next(self.__direction_iterator)
+        iter(self.__direction)
+        self.__index = next(self.__direction)
         return
 
     def slice_by_tag(self, tag_name: str) -> AnimatedSprite:
@@ -211,7 +209,7 @@ class AnimatedSprite:
 
         return AnimatedSprite(
             frames=self.__frames[main_tag.start : main_tag.end + 1],
-            repeat=main_tag.repeat,
+            repeats=main_tag.repeat,
             direction=main_tag.direction,
             tags=sub_tags,
         )
@@ -222,7 +220,7 @@ class AnimatedSprite:
 
         if self.__timer.time >= self.__frames[self.__index].duration:
             try:
-                self.__index = next(self.__direction_iterator)
+                self.__index = next(self.__direction)
             except StopIteration:
                 self.pause()
 
