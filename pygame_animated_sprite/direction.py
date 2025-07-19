@@ -21,10 +21,10 @@ class Direction(ABC, Iterator[int]):
             raise ValueError("frame_count cannot be negative.")
         if repeats is not None and repeats < 0:
             raise ValueError("repeats cannot be negative.")
-        self.frame_count = frame_count
-        self._initial_repeats = repeats
-        self._repeats_left = self._initial_repeats
-        self._current_index = 0
+        self.frame_count: int = frame_count
+        self._initial_repeats: Optional[int] = repeats
+        self._repeats_left: Optional[int] = self._initial_repeats
+        self._current_index: int = 0
 
     def __iter__(self) -> Self:
         """Resets the state for iteration and returns the iterator itself."""
@@ -56,7 +56,7 @@ class Forward(Direction):
 
     def __next__(self) -> int:
         if self.frame_count == 0 or (
-                self._repeats_left is not None and self._repeats_left <= 0
+            self._repeats_left is not None and self._repeats_left <= 0
         ):
             raise StopIteration
 
@@ -80,7 +80,7 @@ class Reverse(Direction):
 
     def __next__(self) -> int:
         if self.frame_count == 0 or (
-                self._repeats_left is not None and self._repeats_left <= 0
+            self._repeats_left is not None and self._repeats_left <= 0
         ):
             raise StopIteration
 
@@ -109,7 +109,7 @@ class PingPong(Direction):
 
     def __next__(self) -> int:
         if self.frame_count == 0 or (
-                self._repeats_left is not None and self._repeats_left <= 0
+            self._repeats_left is not None and self._repeats_left <= 0
         ):
             raise StopIteration
 
@@ -141,6 +141,46 @@ class PingPong(Direction):
         return frame_index
 
 
-# TODO implement this one
 class PingPongReverse(Direction):
-    ...
+    """Iterates through frames backwards and then forwards (e.g., 2, 1, 0, 1, 2, 1, 0...)."""
+
+    def __init__(self, frame_count: int, repeats: Optional[int] = 1) -> None:
+        super().__init__(frame_count, repeats)
+        self._direction = -1 if self.frame_count > 1 else 0
+
+    def _reset_for_iteration(self) -> None:
+        self._current_index = self.frame_count - 1 if self.frame_count > 0 else 0
+        self._direction = -1 if self.frame_count > 1 else 0
+
+    def __next__(self) -> int:
+        if self.frame_count == 0 or (
+            self._repeats_left is not None and self._repeats_left <= 0
+        ):
+            raise StopIteration
+
+        # If there is only one frame, repeat frame 0.
+        if self.frame_count == 1:
+            if self._repeats_left is not None:
+                self._repeats_left -= 1
+            return 0
+
+        frame_index = self._current_index
+
+        # Moving forwards at the end point completes a cycle.
+        if self._current_index == self.frame_count - 1 and self._direction == 1:
+            if self._repeats_left is not None:
+                self._repeats_left -= 1
+            if self._repeats_left is not None and self._repeats_left <= 0:
+                return frame_index
+            # Start a new cycle
+            self._direction = -1
+            self._current_index += self._direction
+        # Change direction when moving backward at the start point.
+        elif self._current_index == 0 and self._direction == -1:
+            self._direction = 1
+            self._current_index += self._direction
+        else:
+            # Continue moving in the current direction.
+            self._current_index += self._direction
+
+        return frame_index
