@@ -10,7 +10,7 @@ from pygame import Surface
 from pygame_animated_sprite._utils import clip_surface
 from pygame_animated_sprite.struct import Frame, Tag
 from pygame_animated_sprite.direction import (
-    DirectionIterable,
+    Direction,
     Forward,
     Reverse,
     PingPong,
@@ -95,7 +95,7 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
 
         packed_image: Surface = pygame.image.load(f"{path.parent}/{meta_data['image']}")
         for tag_data in meta_data["frameTags"]:
-            tag_direction: type[DirectionIterable] = Forward
+            tag_direction: type[Direction] = Forward
             match tag_data["direction"]:
                 case "forward":
                     tag_direction = Forward

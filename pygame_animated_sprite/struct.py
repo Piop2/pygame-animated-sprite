@@ -5,7 +5,7 @@ from dataclasses import dataclass, asdict
 
 from pygame import Surface
 
-from pygame_animated_sprite.direction import DirectionIterable
+from pygame_animated_sprite.direction import Direction
 
 
 @dataclass(frozen=True)
@@ -13,7 +13,7 @@ class Tag:
     name: str
     start: int
     end: int
-    direction: type[DirectionIterable]
+    direction: type[Direction]
     repeat: int
 
     def copy(self) -> Tag:
