@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from pygame import Surface
 
 from pygame_animated_sprite.direction import Direction
 
 
-@dataclass(frozen=True)
+@dataclass
 class Tag:
     name: str
     start: int
@@ -16,13 +16,22 @@ class Tag:
     repeat: int
 
     def copy(self) -> Tag:
-        return replace(self)
+        return Tag(
+            name=self.name,
+            start=self.start,
+            end=self.end,
+            direction=self.direction,
+            repeat=self.repeat,
+        )
 
 
-@dataclass(frozen=True)
+@dataclass
 class Frame:
     image: Surface
     duration: int
 
     def copy(self) -> Frame:
-        return replace(self)
+        return Frame(
+            image=self.image,
+            duration=self.duration,
+        )
