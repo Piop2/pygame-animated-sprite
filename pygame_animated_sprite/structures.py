@@ -32,6 +32,6 @@ class Frame:
 
     def copy(self) -> Frame:
         return Frame(
-            surface=self.surface,
+            surface=self.surface.copy(),
             duration=self.duration,
         )

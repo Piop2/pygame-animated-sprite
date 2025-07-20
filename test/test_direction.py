@@ -3,12 +3,13 @@ import unittest
 from pygame_animated_sprite.direction import Forward, Reverse, PingPong, PingPongReverse
 
 
-class MyTestCase(unittest.TestCase):
+class DirectionTestCase(unittest.TestCase):
     def setUp(self):
         self.forward = iter(Forward(5, 1))
         self.reverse = iter(Reverse(5, 1))
         self.pingpong = iter(PingPong(3, 1))
         self.pingpong_reverse = iter(PingPongReverse(3, 1))
+        return
 
     def test_forward(self):
         self.assertEqual(next(self.forward), 0)
