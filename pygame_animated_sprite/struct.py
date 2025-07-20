@@ -27,11 +27,11 @@ class Tag:
 
 @dataclass
 class Frame:
-    image: Surface
+    surface: Surface
     duration: int
 
     def copy(self) -> Frame:
         return Frame(
-            image=self.image,
+            surface=self.surface,
             duration=self.duration,
         )
