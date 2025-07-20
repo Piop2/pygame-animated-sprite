@@ -11,7 +11,7 @@ from pygame_animated_sprite.direction import (
     Direction,
     Forward,
 )
-from pygame_animated_sprite.struct import Tag, Frame
+from pygame_animated_sprite.structures import Tag, Frame
 from pygame_animated_sprite.encoder.base import (
     AnimatedSpriteEncoder,
     AnimatedSpriteData,
@@ -77,7 +77,7 @@ class AnimatedSprite:
                     if _path.suffix not in [".png", ".jpeg", ".jpg"]:
                         raise UnsupportedFileFormatError
                     return AnimatedSpriteData(
-                        frames=(Frame(image=pygame.image.load(_path), duration=0),)
+                        frames=(Frame(surface=pygame.image.load(_path), duration=0),)
                     )
 
             encoder = DefaultEncoder()
@@ -234,7 +234,7 @@ class AnimatedSprite:
         return
 
     def render(self) -> Surface:
-        return self.__frames[self.__index].image
+        return self.__frames[self.__index].surface
 
     def draw(self, surface: Surface, dest: tuple[int, int] | Vector2) -> None:
         surface.blit(self.render(), dest)

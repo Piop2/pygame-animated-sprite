@@ -8,7 +8,7 @@ import pygame.image
 from pygame import Surface
 
 from pygame_animated_sprite._utils import clip_surface
-from pygame_animated_sprite.struct import Frame, Tag
+from pygame_animated_sprite.structures import Frame, Tag
 from pygame_animated_sprite.direction import (
     Direction,
     Forward,

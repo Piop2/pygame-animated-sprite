@@ -5,7 +5,7 @@ from typing import Optional
 from dataclasses import dataclass, field
 
 from pygame_animated_sprite.direction import Direction
-from pygame_animated_sprite.struct import Frame, Tag
+from pygame_animated_sprite.structures import Frame, Tag
 
 
 @dataclass(frozen=True)
