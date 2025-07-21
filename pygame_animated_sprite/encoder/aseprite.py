@@ -19,7 +19,6 @@ from pygame_animated_sprite.direction import (
 from pygame_animated_sprite.encoder.base import (
     AnimatedSpriteEncoder,
     AnimatedSpriteData,
-    UnsupportedFileFormatError,
 )
 
 
@@ -68,7 +67,6 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
         self,
         json_type: Literal["array", "hash"],
         tags: bool = False,
-        file_suffix: str = ".json",
     ) -> None:
         self.json_type: Literal["array", "hash"] = json_type
 
@@ -76,14 +74,9 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
         self.tags: bool = tags
         # self.layers
         # self.slices
-
-        self.file_suffix: str = file_suffix
         return
 
     def load_file(self, path: Path) -> AnimatedSpriteData:
-        if path.suffix != ".json":
-            raise UnsupportedFileFormatError
-
         frames: list[Frame] = []
         tags: dict[str, Tag] = {}
 
@@ -136,11 +129,9 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
             frames.append(
                 Frame(
                     clip_surface(
-                        packed_image,
-                        frame_rect["x"],
-                        frame_rect["y"],
-                        frame_rect["w"],
-                        frame_rect["h"],
+                        surface=packed_image,
+                        dest=(frame_rect["x"], frame_rect["y"]),
+                        size=(frame_rect["w"], frame_rect["h"]),
                     ),
                     duration,
                 )
@@ -149,6 +140,3 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
         return AnimatedSpriteData(
             frames=tuple(frames), repeat=0, direction=Forward, tags=tags
         )
-
-    def load_folder(self, path: Path) -> AnimatedSpriteData:
-        raise NotImplementedError
