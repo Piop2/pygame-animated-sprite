@@ -6,13 +6,12 @@ from pygame_animated_sprite.direction import Forward
 from pygame_animated_sprite.structures import Tag, Frame
 
 
-class StructuresTestCase(unittest.TestCase):
+class FrameTestCase(unittest.TestCase):
     def setUp(self):
         self.frame = Frame(surface=Surface((0, 0)), duration=0)
-        self.tag = Tag(name="", start=0, end=1, direction=Forward, repeat=1)
         return
 
-    def test_frame_copy(self):
+    def test_copy(self):
         copied_frame = self.frame.copy()
 
         self.assertIsNot(self.frame, copied_frame)
@@ -20,7 +19,13 @@ class StructuresTestCase(unittest.TestCase):
         self.assertEqual(self.frame.duration, copied_frame.duration)
         return
 
-    def test_tag_copy(self):
+
+class TagTestCase(unittest.TestCase):
+    def setUp(self):
+        self.tag = Tag(name="", start=0, end=1, direction=Forward, repeat=1)
+        return
+
+    def test_copy(self):
         copied_tag = self.tag.copy()
 
         self.assertEqual(self.tag.name, copied_tag.name)
