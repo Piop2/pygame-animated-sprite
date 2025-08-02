@@ -114,7 +114,7 @@ class AnimatedSprite:
         cls: type[AnimatedSprite],
         surfaces: Sequence[Surface],
         durations: Sequence[int],
-        repeats: int = 0,
+        repeats: int = -1,
         direction: Optional[type[Direction]] = None,
     ) -> AnimatedSprite:
         """
