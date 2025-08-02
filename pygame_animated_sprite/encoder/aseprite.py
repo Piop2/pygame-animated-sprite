@@ -141,5 +141,5 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
             )
 
         return AnimatedSpriteData(
-            frames=tuple(frames), repeat=0, direction=Forward, tags=tags
+            frames=tuple(frames), repeat=-1, direction=Forward, tags=tags
         )

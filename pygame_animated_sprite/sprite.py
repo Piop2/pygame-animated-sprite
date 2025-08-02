@@ -104,7 +104,7 @@ class AnimatedSprite:
 
         return cls(
             frames=data.frames if data.frames is not None else [],
-            repeats=data.repeat if data.repeat is not None else 0,
+            repeats=data.repeat if data.repeat is not None else -1,
             direction=data.direction if data.direction is not None else Forward,
             tags=data.tags if data.tags is not None else {},
         )
@@ -196,7 +196,7 @@ class AnimatedSprite:
 
     def is_playing(self) -> bool:
         """Returns True if the animation is playing."""
-        return self.__timer.is_paused()
+        return not self.__timer.is_paused()
 
     def play(self) -> None:
         """Plays the animation."""
