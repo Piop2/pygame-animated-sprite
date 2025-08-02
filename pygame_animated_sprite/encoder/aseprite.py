@@ -88,7 +88,7 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
 
         packed_image: Surface = pygame.image.load(f"{path.parent}/{meta_data['image']}")
         for tag_data in meta_data["frameTags"]:
-            tag_direction: type[Direction] = Forward
+            tag_direction: type[Direction]
             match tag_data["direction"]:
                 case "forward":
                     tag_direction = Forward
@@ -99,7 +99,7 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
                 case "pingpong_reverse":
                     tag_direction = PingPongReverse
                 case _:
-                    NotImplementedError(
+                    raise NotImplementedError(
                         f"not implemented direction: {tag_data['direction']}"
                     )
 
@@ -108,6 +108,9 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
                 tag_repeat = int(tag_data["repeat"])
             except KeyError:
                 tag_repeat = 0
+
+            if tag_repeat == 0:
+                tag_repeat = -1
 
             tags[tag_data["name"]] = Tag(
                 name=tag_data["name"],
