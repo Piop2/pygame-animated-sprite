@@ -21,6 +21,10 @@ from pygame_animated_sprite.encoder.base import (
 
 @final
 class AnimatedSprite:
+    """
+    A class for handling animated sprites in Pygame.
+    """
+
     def __init__(
         self,
         frames: Sequence[Frame],
@@ -28,13 +32,16 @@ class AnimatedSprite:
         direction: type[Direction],
         tags: dict[str, Tag],
     ) -> None:
+        """
+        Initializes the AnimatedSprite.
+
+        :param frames: A sequence of Frame objects.
+        :param repeats: The number of times to repeat the animation.
+        :param direction: The direction of the animation (e.g., Forward, Reverse).
+        :param tags: A dictionary of tags for slicing the animation.
+        """
         self.__frames: list[Frame] = list(frames)
         self.__tags: dict[str, Tag] = tags
-
-        # origin repeat
-        self.__repeat: int
-        if repeats <= 0:
-            self.__repeats = repeats = 0
 
         self.__direction: Direction = direction(
             frame_count=len(frames),
@@ -48,9 +55,13 @@ class AnimatedSprite:
         return
 
     def __len__(self) -> int:
+        """Returns the number of frames in the animation."""
         return len(self.__frames)
 
     def __getitem__(self, key: int | str | slice) -> Frame | AnimatedSprite:
+        """
+        Gets a frame or a new AnimatedSprite by index, tag, or slice.
+        """
         if isinstance(key, int):  # index
             return self.__frames[key]
 
@@ -70,6 +81,13 @@ class AnimatedSprite:
         path: str,
         encoder: Optional[AnimatedSpriteEncoder] = None,
     ) -> AnimatedSprite:
+        """
+        Loads an animated sprite from a file.
+
+        :param path: The path to the file.
+        :param encoder: The encoder to use for loading the file.
+        :return: An AnimatedSprite object.
+        """
         if encoder is None:
 
             class DefaultEncoder(AnimatedSpriteEncoder):
@@ -99,6 +117,9 @@ class AnimatedSprite:
         repeats: int = 0,
         direction: Optional[type[Direction]] = None,
     ) -> AnimatedSprite:
+        """
+        Creates an AnimatedSprite from a sequence of surfaces and durations.
+        """
         if len(surfaces) != len(durations):
             raise ValueError
 
@@ -113,6 +134,7 @@ class AnimatedSprite:
 
     @property
     def frames(self) -> tuple[Frame, ...]:
+        """The frames of the animation."""
         return tuple(self.__frames)
 
     @frames.setter
@@ -123,6 +145,7 @@ class AnimatedSprite:
 
     @property
     def tags(self) -> dict[str, Tag]:
+        """The tags for slicing the animation."""
         return self.__tags
 
     @tags.setter
@@ -132,52 +155,61 @@ class AnimatedSprite:
 
     @property
     def repeat(self) -> int:
-        return self.__repeats
+        """The number of times to repeat the animation."""
+        return self.__direction.repeats
 
     @repeat.setter
     def repeat(self, new: int) -> None:
-        self.__direction.repeat = new
+        self.__direction.repeats = new
         self.reset()
         return
 
     @property
     def index(self) -> int:
+        """The current frame index."""
         return self.__index
 
     @property
     def direction(self) -> type[Direction]:
+        """The direction of the animation."""
         return self.__direction.__class__
 
     @direction.setter
     def direction(self, new: type[Direction]) -> None:
         self.__direction = new(
             frame_count=len(self.__frames),
-            repeats=self.__repeats,
+            repeats=self.repeat,
         )
         self.reset()
         return
 
     def get_time(self) -> int:
+        """Gets the current time of the animation timer."""
         return self.__timer.time
 
     def get_current_frame(self) -> Frame:
+        """Gets the current frame of the animation."""
         if not self.__frames:
             raise RuntimeError
 
         return self.__frames[self.__index]
 
     def is_playing(self) -> bool:
+        """Returns True if the animation is playing."""
         return self.__timer.is_paused()
 
     def play(self) -> None:
+        """Plays the animation."""
         self.__timer.unpause()
         return
 
     def pause(self) -> None:
+        """Pauses the animation."""
         self.__timer.pause()
         return
 
     def reset(self) -> None:
+        """Resets the animation to the beginning."""
         self.play()
         self.__timer.reset()
         iter(self.__direction)
@@ -185,6 +217,9 @@ class AnimatedSprite:
         return
 
     def slice_by_tag(self, tag_name: str) -> AnimatedSprite:
+        """
+        Creates a new AnimatedSprite from a slice of the original.
+        """
         if tag_name not in self.__tags:
             raise KeyError
 
@@ -215,6 +250,9 @@ class AnimatedSprite:
         )
 
     def update(self, time_delta: int) -> None:
+        """
+        Updates the animation by a given time delta.
+        """
         if not self.is_playing():
             return
 
@@ -234,8 +272,10 @@ class AnimatedSprite:
         return
 
     def render(self) -> Surface:
+        """Renders the current frame of the animation."""
         return self.__frames[self.__index].surface
 
     def draw(self, surface: Surface, dest: tuple[int, int] | Vector2) -> None:
+        """Draws the current frame of the animation to a surface."""
         surface.blit(self.render(), dest)
         return
