@@ -66,12 +66,10 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
     def __init__(
         self,
         json_type: Literal["array", "hash"],
-        tags: bool = False,
     ) -> None:
         self.json_type: Literal["array", "hash"] = json_type
 
         # meta
-        self.tags: bool = tags
         # self.layers
         # self.slices
         return
