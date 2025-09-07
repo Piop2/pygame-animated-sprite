@@ -19,6 +19,13 @@ from pygame_animated_sprite.encoder.base import (
 )
 
 
+def load(
+    path: str,
+    encoder: Optional[AnimatedSpriteEncoder] = None,
+) -> AnimatedSprite:
+    return AnimatedSprite.load(path, encoder)
+
+
 @final
 class AnimatedSprite:
     """
@@ -72,8 +79,6 @@ class AnimatedSprite:
             return AnimatedSprite(
                 frames=self.__frames[key], repeats=0, direction=Forward, tags={}
             )
-
-        raise TypeError
 
     @classmethod
     def load(
