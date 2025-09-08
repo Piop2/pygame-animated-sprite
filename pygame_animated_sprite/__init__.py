@@ -3,7 +3,7 @@ from pygame_animated_sprite.sprite import AnimatedSprite
 from pygame_animated_sprite.direction import Forward, Reverse, PingPong, PingPongReverse
 from pygame_animated_sprite.structures import Frame, Tag
 
-__version__: str = "1.4.0"
+__version__: str = "1.4.1"
 __author__: str = "Pio"
 __email__: str = "pioooop2@gmail.com"
 __license__: str = "MIT"
