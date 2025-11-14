@@ -15,14 +15,14 @@ class Tag:
     direction: type[Direction]
     repeat: int
 
-    def copy(self) -> Tag:
-        return Tag(
-            name=self.name,
-            start=self.start,
-            end=self.end,
-            direction=self.direction,
-            repeat=self.repeat,
-        )
+    # def copy(self) -> Tag:
+    #     return Tag(
+    #         name=self.name,
+    #         start=self.start,
+    #         end=self.end,
+    #         direction=self.direction,
+    #         repeat=self.repeat,
+    #     )
 
 
 @dataclass

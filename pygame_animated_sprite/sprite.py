@@ -80,6 +80,8 @@ class AnimatedSprite:
                 frames=self.__frames[key], repeats=0, direction=Forward, tags={}
             )
 
+        raise RuntimeError
+
     @classmethod
     def load(
         cls: type[AnimatedSprite],
@@ -228,30 +230,13 @@ class AnimatedSprite:
         if tag_name not in self.__tags:
             raise KeyError
 
-        main_tag: Tag = self.__tags[tag_name]
-
-        sub_tags: dict[str, Tag] = {}
-        for name, tag in self.__tags.items():
-            if tag == main_tag:
-                continue
-
-            if main_tag.start <= tag.start and tag.end <= main_tag.end:
-                new_start: int = tag.start - main_tag.start
-                new_end: int = main_tag.end - tag.end
-
-                sub_tags[name] = Tag(
-                    name=tag.name,
-                    start=new_start,
-                    end=new_end,
-                    direction=tag.direction,
-                    repeat=tag.repeat,
-                )
+        tag: Tag = self.__tags[tag_name]
 
         return AnimatedSprite(
-            frames=self.__frames[main_tag.start : main_tag.end + 1],
-            repeats=main_tag.repeat,
-            direction=main_tag.direction,
-            tags=sub_tags,
+            frames=self.__frames[tag.start: tag.end + 1],
+            repeats=tag.repeat,
+            direction=tag.direction,
+            tags={},
         )
 
     def update(self, time_delta: int) -> None:

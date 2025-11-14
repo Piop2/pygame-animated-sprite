@@ -16,7 +16,7 @@ class Direction(ABC, Iterator[int]):
 
         :param frame_count: The total number of frames in the animation.
         :param repeats: The number of times to repeat the animation.
-                        A value of -1 or less means infinite repeats.
+                        A value of -1 or less mean infinite repeats.
                         A value of 0 means no repeats.
                         A value of 1 or more means a specific number of repeats.
         """
