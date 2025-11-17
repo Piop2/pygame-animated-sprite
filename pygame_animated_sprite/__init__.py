@@ -1,7 +1,11 @@
+"""
+Animated Sprite package for pygame
+"""
+
 import pygame_animated_sprite.encoder
-from pygame_animated_sprite.sprite import AnimatedSprite
+from pygame_animated_sprite.sprite import AnimatedSprite, load
 from pygame_animated_sprite.direction import Forward, Reverse, PingPong, PingPongReverse
-from pygame_animated_sprite.structures import Frame, Tag
+# from pygame_animated_sprite.structures import Frame, Tag
 
 __version__: str = "1.4.1"
 __author__: str = "Pio"

@@ -233,7 +233,7 @@ class AnimatedSprite:
         tag: Tag = self.__tags[tag_name]
 
         return AnimatedSprite(
-            frames=self.__frames[tag.start: tag.end + 1],
+            frames=self.__frames[tag.start : tag.end + 1],
             repeats=tag.repeat,
             direction=tag.direction,
             tags={},
