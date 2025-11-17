@@ -6,7 +6,7 @@ from pathlib import Path
 import pygame.image
 from pygame import Surface, Vector2
 
-from pygame_animated_sprite.timer import CountUpTimer
+from pygame_animated_sprite._timer import CountUpTimer
 from pygame_animated_sprite.direction import (
     Direction,
     Forward,
