@@ -1,6 +1,6 @@
 import pygame
 from pygame_animated_sprite import AnimatedSprite
-from pygame_animated_sprite.encoder import AsepriteSpriteSheetEncoder
+from pygame_animated_sprite.encoder.aseprite import AsepriteSpriteSheetEncoder
 
 
 pygame.init()
