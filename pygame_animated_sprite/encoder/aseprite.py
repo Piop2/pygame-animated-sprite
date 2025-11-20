@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
-from typing import Literal, TypedDict, Any
+from typing import Literal, TypedDict
 
 import pygame.image
 from pygame import Surface
@@ -21,7 +22,7 @@ from pygame_animated_sprite.encoder.base import (
     AnimatedSpriteData,
 )
 
-
+__JsonFormat = Literal["array", "hash"]
 __Size = TypedDict("__Size", {"w": int, "h": int})
 __Rect = TypedDict("__Rect", {"x": int, "y": int, "w": int, "h": int})
 __Frames = TypedDict(
@@ -63,49 +64,56 @@ __Meta = TypedDict(
 class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
     """Aseprite sprite sheet encoder"""
 
+    # minimum supported version
+    MIN_SUPPORTED_VERSION = (1, 2)
+
     def __init__(
         self,
-        json_type: Literal["array", "hash"],
+        json_format: __JsonFormat,
     ) -> None:
-        self.json_type: Literal["array", "hash"] = json_type
+        self.json_format: __JsonFormat = json_format
 
         # meta
         # self.layers
         # self.slices
         return
 
-    def load_file(self, path: Path) -> AnimatedSpriteData:
-        frames: list[Frame] = []
+    def __warn_if_unsupported_version(self, version: str) -> None:
+        _ver = tuple(map(int, version.split(".")[0:2]))
+        print(_ver)
+        if _ver >= self.MIN_SUPPORTED_VERSION:
+            return
+
+        warnings.warn(
+            f"version {version} is not supported and may cause errors.", UserWarning
+        )
+        return
+
+    def __parse_tags(self, frame_tags: list[__Tag]) -> dict[str, Tag]:
         tags: dict[str, Tag] = {}
-
-        data: dict[str, Any]
-        with open(path.as_posix(), "r") as file:
-            data = json.load(file)
-        # ---------meta---------
-        meta_data: __Meta = data["meta"]
-
-        packed_image: Surface = pygame.image.load(f"{path.parent}/{meta_data['image']}")
-        for tag_data in meta_data["frameTags"]:
-            tag_direction: type[Direction]
+        for tag_data in frame_tags:
+            direction: type[Direction]
             match tag_data["direction"]:
                 case "forward":
-                    tag_direction = Forward
+                    direction = Forward
                 case "reverse":
-                    tag_direction = Reverse
+                    direction = Reverse
                 case "pingpong":
-                    tag_direction = PingPong
+                    direction = PingPong
                 case "pingpong_reverse":
-                    tag_direction = PingPongReverse
+                    direction = PingPongReverse
                 case _:
-                    raise NotImplementedError(
-                        f"not implemented direction: {tag_data['direction']}"
+                    direction = Forward
+                    warnings.warn(
+                        f"{tag_data['direction']} direction is not supported. Using 'Forward' as default.",
+                        UserWarning,
                     )
 
             tag_repeat: int
             try:
                 tag_repeat = int(tag_data["repeat"])
             except KeyError:
-                tag_repeat = 0
+                tag_repeat = -1
 
             if tag_repeat == 0:
                 tag_repeat = -1
@@ -114,30 +122,50 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
                 name=tag_data["name"],
                 start=tag_data["from"],
                 end=tag_data["to"] + 1,
-                direction=tag_direction,
+                direction=direction,
                 repeat=tag_repeat,
             )
 
-        # --------frames--------
-        frame_list: list[__Frames] = []
-        if self.json_type == "hash":
-            frame_list = list(data["frames"].values())
+        return tags
 
-        frame_data: __Frames
-        for frame_data in frame_list:
-            frame_rect: __Rect = frame_data["frame"]
-            duration: int = frame_data["duration"]
+    def __parse_frames(
+        self, image: Surface, frames_raw: dict[str, __Frames] | list[__Frames]
+    ) -> tuple[Frame, ...]:
+        frames_list: list[__Frames]
+        if self.json_format == "hash":
+            frames_list = list(frames_raw.values())
+        else:  # self.json_format == "array"
+            frames_list = frames_raw
+
+        frames: list[Frame] = []
+        for frame_data in frames_list:
+            rect: __Rect = frame_data["frame"]
+            duration = frame_data["duration"]
+
             frames.append(
                 Frame(
                     clip_surface(
-                        surface=packed_image,
-                        dest=(frame_rect["x"], frame_rect["y"]),
-                        size=(frame_rect["w"], frame_rect["h"]),
+                        surface=image,
+                        dest=(rect["x"], rect["y"]),
+                        size=(rect["w"], rect["h"]),
                     ),
                     duration,
                 )
             )
+        return tuple(frames)
 
+    def load_file(self, path: Path) -> AnimatedSpriteData:
+        with open(path.as_posix(), "r") as file:
+            data = json.load(file)
+
+        meta: __Meta = data["meta"]
+        self.__warn_if_unsupported_version(meta["version"])
+
+        image = pygame.image.load(str(path.parent / meta["image"]))
+        tags = self.__parse_tags(meta["frameTags"])
+        frames = self.__parse_frames(image, data["frames"])
+
+        # repeat=-1 (infinite), direction=Forward (default)
         return AnimatedSpriteData(
-            frames=tuple(frames), repeat=-1, direction=Forward, tags=tags
+            frames=frames, repeat=-1, direction=Forward, tags=tags
         )
