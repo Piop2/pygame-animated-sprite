@@ -17,9 +17,9 @@ from pygame_animated_sprite.direction import (
     PingPong,
     PingPongReverse,
 )
-from pygame_animated_sprite.encoder.base import (
-    AnimatedSpriteEncoder,
-    AnimatedSpriteData,
+from pygame_animated_sprite.loader.base import (
+    BaseSpriteSheetLoader,
+    SpriteSheetData,
 )
 
 __JsonFormat = Literal["array", "hash"]
@@ -61,7 +61,7 @@ __Meta = TypedDict(
 )
 
 
-class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
+class AsepriteBaseSpriteSheetEncoder(BaseSpriteSheetLoader):
     """Aseprite sprite sheet encoder"""
 
     # minimum supported version
@@ -89,10 +89,10 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
         )
         return
 
-    def __parse_tags(self, frame_tags: list[__Tag]) -> dict[str, Tag]:
+    def __load_tags(self, frame_tags: list[__Tag]) -> dict[str, Tag]:
         tags: dict[str, Tag] = {}
         for tag_data in frame_tags:
-            direction: type[Direction]
+            direction: type[Direction] = Forward
             match tag_data["direction"]:
                 case "forward":
                     direction = Forward
@@ -103,7 +103,6 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
                 case "pingpong_reverse":
                     direction = PingPongReverse
                 case _:
-                    direction = Forward
                     warnings.warn(
                         f"{tag_data['direction']} direction is not supported. Using 'Forward' as default.",
                         UserWarning,
@@ -128,7 +127,7 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
 
         return tags
 
-    def __parse_frames(
+    def __load_frames(
         self, image: Surface, frames_raw: dict[str, __Frames] | list[__Frames]
     ) -> tuple[Frame, ...]:
         frames_list: list[__Frames]
@@ -154,7 +153,7 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
             )
         return tuple(frames)
 
-    def load_file(self, path: Path) -> AnimatedSpriteData:
+    def load_file(self, path: Path) -> SpriteSheetData:
         with open(path.as_posix(), "r") as file:
             data = json.load(file)
 
@@ -162,10 +161,10 @@ class AsepriteSpriteSheetEncoder(AnimatedSpriteEncoder):
         self.__warn_if_unsupported_version(meta["version"])
 
         image = pygame.image.load(str(path.parent / meta["image"]))
-        tags = self.__parse_tags(meta["frameTags"])
-        frames = self.__parse_frames(image, data["frames"])
+        tags = self.__load_tags(meta["frameTags"])
+        frames = self.__load_frames(image, data["frames"])
 
         # repeat=-1 (infinite), direction=Forward (default)
-        return AnimatedSpriteData(
+        return SpriteSheetData(
             frames=frames, repeat=-1, direction=Forward, tags=tags
         )

@@ -1,4 +1,4 @@
-import pygame_animated_sprite.encoder
+import pygame_animated_sprite.loader
 from pygame_animated_sprite.sprite import AnimatedSprite
 from pygame_animated_sprite.direction import Forward, Reverse, PingPong, PingPongReverse
 from pygame_animated_sprite.structures import Frame, Tag

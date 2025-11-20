@@ -12,18 +12,18 @@ from pygame_animated_sprite.direction import (
     Forward,
 )
 from pygame_animated_sprite.structures import Tag, Frame
-from pygame_animated_sprite.encoder.base import (
-    AnimatedSpriteEncoder,
-    AnimatedSpriteData,
+from pygame_animated_sprite.loader.base import (
+    BaseSpriteSheetLoader,
+    SpriteSheetData,
     UnsupportedFileFormatError,
 )
 
 
 def load(
     path: str,
-    encoder: Optional[AnimatedSpriteEncoder] = None,
+    loader: Optional[BaseSpriteSheetLoader] = None,
 ) -> AnimatedSprite:
-    return AnimatedSprite.load(path, encoder)
+    return AnimatedSprite.load(path, loader)
 
 
 @final
@@ -84,28 +84,28 @@ class AnimatedSprite:
     def load(
         cls: type[AnimatedSprite],
         path: str,
-        encoder: Optional[AnimatedSpriteEncoder] = None,
+        loader: Optional[BaseSpriteSheetLoader] = None,
     ) -> AnimatedSprite:
         """
         Loads an animated sprite from a file.
 
         :param path: The path to the file.
-        :param encoder: The encoder to use for loading the file.
+        :param loader: The encoder to use for loading the file.
         :return: An AnimatedSprite object.
         """
-        if encoder is None:
+        if loader is None:
 
-            class DefaultEncoder(AnimatedSpriteEncoder):
-                def load_file(self, _path: Path) -> AnimatedSpriteData:
+            class DefaultEncoder(BaseSpriteSheetLoader):
+                def load_file(self, _path: Path) -> SpriteSheetData:
                     if _path.suffix not in [".png", ".jpeg", ".jpg"]:
                         raise UnsupportedFileFormatError
-                    return AnimatedSpriteData(
+                    return SpriteSheetData(
                         frames=(Frame(surface=pygame.image.load(_path), duration=0),)
                     )
 
-            encoder = DefaultEncoder()
+            loader = DefaultEncoder()
 
-        data: AnimatedSpriteData = encoder.load(Path(path))
+        data: SpriteSheetData = loader.load(Path(path))
 
         return cls(
             frames=data.frames if data.frames is not None else [],

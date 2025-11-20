@@ -1,6 +1,6 @@
 import pygame
 from pygame_animated_sprite import AnimatedSprite
-from pygame_animated_sprite.encoder.aseprite import AsepriteSpriteSheetEncoder
+from pygame_animated_sprite.loader.aseprite import AsepriteBaseSpriteSheetEncoder
 
 
 pygame.init()
@@ -10,8 +10,8 @@ pygame.display.set_caption("import aseprite sprite sheet")
 clock = pygame.Clock()
 
 
-encoder = AsepriteSpriteSheetEncoder(json_format="hash")
-mario_animation = AnimatedSprite.load(path="./mario.json", encoder=encoder)
+encoder = AsepriteBaseSpriteSheetEncoder(json_format="hash")
+mario_animation = AnimatedSprite.load(path="./mario.json", loader=encoder)
 
 running = True
 while running:
