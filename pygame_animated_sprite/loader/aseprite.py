@@ -61,7 +61,7 @@ __Meta = TypedDict(
 )
 
 
-class AsepriteBaseSpriteSheetEncoder(BaseSpriteSheetLoader):
+class AsepriteSpriteSheetEncoder(BaseSpriteSheetLoader):
     """Aseprite sprite sheet encoder"""
 
     # minimum supported version
