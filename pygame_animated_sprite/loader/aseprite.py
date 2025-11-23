@@ -61,26 +61,18 @@ __Meta = TypedDict(
 )
 
 
-class AsepriteSpriteSheetEncoder(BaseSpriteSheetLoader):
+class AsepriteSpriteSheetLoader(BaseSpriteSheetLoader):
     """Aseprite sprite sheet encoder"""
 
     # minimum supported version
     MIN_SUPPORTED_VERSION = (1, 2)
 
-    def __init__(
-        self,
-        json_format: __JsonFormat,
-    ) -> None:
+    def __init__(self, json_format: __JsonFormat) -> None:
         self.json_format: __JsonFormat = json_format
-
-        # meta
-        # self.layers
-        # self.slices
         return
 
     def __warn_if_unsupported_version(self, version: str) -> None:
         _ver = tuple(map(int, version.split(".")[0:2]))
-        print(_ver)
         if _ver >= self.MIN_SUPPORTED_VERSION:
             return
 
@@ -138,19 +130,45 @@ class AsepriteSpriteSheetEncoder(BaseSpriteSheetLoader):
 
         frames: list[Frame] = []
         for frame_data in frames_list:
-            rect: __Rect = frame_data["frame"]
+            rect = frame_data["frame"]
             duration = frame_data["duration"]
+            is_trimmed = frame_data["trimmed"]
 
-            frames.append(
-                Frame(
-                    clip_surface(
-                        surface=image,
-                        dest=(rect["x"], rect["y"]),
-                        size=(rect["w"], rect["h"]),
-                    ),
-                    duration,
-                )
+            clipped_image = clip_surface(
+                surface=image,
+                dest=(rect["x"], rect["y"]),
+                size=(rect["w"], rect["h"]),
             )
+
+            if not is_trimmed:
+                frames.append(
+                    Frame(
+                        clipped_image,
+                        duration,
+                    )
+                )
+                continue
+
+            # for trimmed frame: merge to latest frame
+            sprite_source_size = frame_data["spriteSourceSize"]
+            latest_frame_surface = frames[-1].surface.copy()
+
+            width = latest_frame_surface.width
+            if latest_frame_surface.width <= sprite_source_size["x"]:
+                width += sprite_source_size["w"]
+
+            height = latest_frame_surface.height
+            if latest_frame_surface.height <= sprite_source_size["h"]:
+                height += sprite_source_size["h"]
+
+            merged_frame = Surface((width, height))
+            merged_frame.blit(latest_frame_surface, (0, 0))
+            merged_frame.blit(
+                clipped_image, (sprite_source_size["x"], sprite_source_size["y"])
+            )
+
+            frames[-1].surface = merged_frame
+
         return tuple(frames)
 
     def load_file(self, path: Path) -> SpriteSheetData:
@@ -165,6 +183,4 @@ class AsepriteSpriteSheetEncoder(BaseSpriteSheetLoader):
         frames = self.__load_frames(image, data["frames"])
 
         # repeat=-1 (infinite), direction=Forward (default)
-        return SpriteSheetData(
-            frames=frames, repeat=-1, direction=Forward, tags=tags
-        )
+        return SpriteSheetData(frames=frames, repeat=-1, direction=Forward, tags=tags)

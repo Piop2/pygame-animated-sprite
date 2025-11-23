@@ -18,10 +18,10 @@ class SpriteSheetData:
 
 class BaseSpriteSheetLoader:
     def load_file(self, path: Path) -> SpriteSheetData:
-        raise NotImplementedError
+        raise NotImplementedError("file load is not implemented.")
 
     def load_folder(self, path: Path) -> SpriteSheetData:
-        raise NotImplementedError
+        raise NotImplementedError("folder load is not implemented.")
 
     def load(self, path: Path) -> SpriteSheetData:
         if path.is_file():
