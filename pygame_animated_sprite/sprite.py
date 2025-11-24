@@ -12,9 +12,9 @@ from pygame_animated_sprite.direction import (
     Forward,
 )
 from pygame_animated_sprite.structures import Tag, Frame
-from pygame_animated_sprite.encoder.base import (
-    AnimatedSpriteEncoder,
-    AnimatedSpriteData,
+from pygame_animated_sprite.loader.base import (
+    BaseSpriteSheetLoader,
+    SpriteSheetData,
     UnsupportedFileFormatError,
 )
 
