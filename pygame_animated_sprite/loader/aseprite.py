@@ -22,7 +22,7 @@ from pygame_animated_sprite.loader.base import (
     SpriteSheetData,
 )
 
-__JsonFormat = Literal["array", "hash"]
+# __JsonFormat = Literal["array", "hash"]
 __Size = TypedDict("__Size", {"w": int, "h": int})
 __Rect = TypedDict("__Rect", {"x": int, "y": int, "w": int, "h": int})
 __Frames = TypedDict(
@@ -67,8 +67,8 @@ class AsepriteSpriteSheetLoader(BaseSpriteSheetLoader):
     # minimum supported version
     MIN_SUPPORTED_VERSION = (1, 2)
 
-    def __init__(self, json_format: __JsonFormat) -> None:
-        self.json_format: __JsonFormat = json_format
+    def __init__(self) -> None:
+        # self.json_format: __JsonFormat = json_format
         return
 
     def __warn_if_unsupported_version(self, version: str) -> None:
@@ -120,16 +120,18 @@ class AsepriteSpriteSheetLoader(BaseSpriteSheetLoader):
         return tags
 
     def __load_frames(
-        self, image: Surface, frames_raw: dict[str, __Frames] | list[__Frames]
+        self, image: Surface, frames_raw: list[__Frames]
     ) -> tuple[Frame, ...]:
-        frames_list: list[__Frames]
-        if self.json_format == "hash":
-            frames_list = list(frames_raw.values())
-        else:  # self.json_format == "array"
-            frames_list = frames_raw
+        # frames_list: list[__Frames]
+        # if self.json_format == "hash":
+        #     frames_list = list(frames_raw.values())
+        # else:  # self.json_format == "array"
+        #     frames_list = frames_raw
+        if type(frames_raw) != list:
+            raise RuntimeError("hash type is not supported")
 
         frames: list[Frame] = []
-        for frame_data in frames_list:
+        for frame_data in frames_raw:
             rect = frame_data["frame"]
             duration = frame_data["duration"]
             is_trimmed = frame_data["trimmed"]
@@ -158,7 +160,7 @@ class AsepriteSpriteSheetLoader(BaseSpriteSheetLoader):
                 width += sprite_source_size["w"]
 
             height = latest_frame_surface.height
-            if latest_frame_surface.height <= sprite_source_size["h"]:
+            if latest_frame_surface.height <= sprite_source_size["y"]:
                 height += sprite_source_size["h"]
 
             merged_frame = Surface((width, height))
