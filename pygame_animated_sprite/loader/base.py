@@ -9,21 +9,21 @@ from pygame_animated_sprite.structures import Frame, Tag
 
 
 @dataclass(frozen=True)
-class AnimatedSpriteData:
+class SpriteSheetData:
     frames: Optional[tuple[Frame, ...]] = field(default=None)
     repeat: int = field(default=-1)
     direction: Optional[type[Direction]] = field(default=None)
     tags: Optional[dict[str, Tag]] = field(default=None)
 
 
-class AnimatedSpriteEncoder:
-    def load_file(self, path: Path) -> AnimatedSpriteData:
-        raise NotImplementedError
+class BaseSpriteSheetLoader:
+    def load_file(self, path: Path) -> SpriteSheetData:
+        raise NotImplementedError("file load is not implemented.")
 
-    def load_folder(self, path: Path) -> AnimatedSpriteData:
-        raise NotImplementedError
+    def load_folder(self, path: Path) -> SpriteSheetData:
+        raise NotImplementedError("folder load is not implemented.")
 
-    def load(self, path: Path) -> AnimatedSpriteData:
+    def load(self, path: Path) -> SpriteSheetData:
         if path.is_file():
             return self.load_file(path)
         return self.load_folder(path)
