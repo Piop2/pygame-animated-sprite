@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 from pathlib import Path
-from typing import Literal, TypedDict
+from typing import Literal, TypedDict, Optional
 
 import pygame.image
 from pygame import Surface
@@ -67,8 +67,9 @@ class AsepriteSpriteSheetLoader(BaseSpriteSheetLoader):
     # minimum supported version
     MIN_SUPPORTED_VERSION = (1, 2)
 
-    def __init__(self) -> None:
+    def __init__(self, image: Optional[Surface] = None) -> None:
         # self.json_format: __JsonFormat = json_format
+        self.image = image
         return
 
     def __warn_if_unsupported_version(self, version: str) -> None:
@@ -180,9 +181,14 @@ class AsepriteSpriteSheetLoader(BaseSpriteSheetLoader):
         meta: __Meta = data["meta"]
         self.__warn_if_unsupported_version(meta["version"])
 
-        image = pygame.image.load(str(path.parent / meta["image"]))
+        if self.image is None:
+            if "image" in meta:
+                self.image = pygame.image.load(str(path.parent / meta["image"]))
+            else:
+                raise RuntimeError
+
         tags = self.__load_tags(meta["frameTags"])
-        frames = self.__load_frames(image, data["frames"])
+        frames = self.__load_frames(self.image.copy(), data["frames"])
 
         # repeat=-1 (infinite), direction=Forward (default)
         return SpriteSheetData(frames=frames, repeat=-1, direction=Forward, tags=tags)
