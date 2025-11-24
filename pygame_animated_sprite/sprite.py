@@ -80,6 +80,8 @@ class AnimatedSprite:
                 frames=self.__frames[key], repeats=0, direction=Forward, tags={}
             )
 
+        raise TypeError
+
     @classmethod
     def load(
         cls: type[AnimatedSprite],
