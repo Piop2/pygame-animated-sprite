@@ -110,10 +110,10 @@ class AnimatedSprite:
         data: SpriteSheetData = loader.load(Path(path))
 
         return cls(
-            frames=data.frames if data.frames is not None else [],
-            repeats=data.repeat if data.repeat is not None else -1,
-            direction=data.direction if data.direction is not None else Forward,
-            tags=data.tags if data.tags is not None else {},
+            frames=data.frames,
+            repeats=data.repeat,
+            direction=data.direction,
+            tags=data.tags,
         )
 
     @classmethod
