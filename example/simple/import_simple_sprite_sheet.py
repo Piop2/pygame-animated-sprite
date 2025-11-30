@@ -10,10 +10,10 @@ pygame.display.set_caption("import simple sprite sheet")
 clock = pygame.Clock()
 
 
-encoder = SimpleSpriteSheetLoader(
+loader = SimpleSpriteSheetLoader(
     columns=1, rows=3, size=(32, 32), position=(1, 13), padding=(1, 0)
 )
-parappa_animation = AnimatedSprite.load(path="parappa_sheet.png", loader=encoder)
+parappa_animation = AnimatedSprite.load(path="parappa_sheet.png", loader=loader)
 
 running = True
 while running:
@@ -26,8 +26,7 @@ while running:
     parappa_animation.update(time_delta)
 
     # render
-    window.fill((147, 199, 255))
-    window.blit(pygame.transform.scale_by(parappa_animation.render(), 10), (10, 10))
+    window.blit(pygame.transform.scale(parappa_animation.render(), window.size), (0, 0))
 
     pygame.display.flip()
 

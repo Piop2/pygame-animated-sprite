@@ -13,7 +13,7 @@ from pygame_animated_sprite.loader.base import BaseSpriteSheetLoader
 
 
 class SimpleSpriteSheetLoader(BaseSpriteSheetLoader):
-    DEFAULT_DURATION = 100
+    """Simple sprite sheet loader"""
 
     def __init__(
         self,
@@ -22,6 +22,7 @@ class SimpleSpriteSheetLoader(BaseSpriteSheetLoader):
         size: tuple[int, int],
         position: tuple[int, int] = (0, 0),
         padding: tuple[int, int] = (0, 0),
+        default_duration: int = 100,
     ) -> None:
         if columns <= 0:
             raise ValueError("columns must be greater than 0.")
@@ -31,14 +32,11 @@ class SimpleSpriteSheetLoader(BaseSpriteSheetLoader):
             raise ValueError("rows must be greater than 0.")
         self.rows = rows
 
-        self.width = size[0]
-        self.height = size[1]
+        self.width, self.height = size
+        self.x, self.y = position
+        self.padding_x, self.padding_y = padding
 
-        self.x = position[0]
-        self.y = position[1]
-
-        self.padding_x = padding[0]
-        self.padding_y = padding[1]
+        self.default_duration = default_duration
         return
 
     def __load_frames(self, image: Surface) -> tuple[Frame, ...]:
@@ -57,7 +55,7 @@ class SimpleSpriteSheetLoader(BaseSpriteSheetLoader):
                             ),
                             (self.width, self.height),
                         ),
-                        duration=self.DEFAULT_DURATION,
+                        duration=self.default_duration,
                     )
                 )
 

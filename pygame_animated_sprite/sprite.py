@@ -92,7 +92,7 @@ class AnimatedSprite:
         Loads an animated sprite from a file.
 
         :param path: The path to the file.
-        :param loader: The encoder to use for loading the file.
+        :param loader: The loader to use for loading the file.
         :return: An AnimatedSprite object.
         """
         if loader is None:
